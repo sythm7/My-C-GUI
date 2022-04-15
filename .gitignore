@@ -1,3 +1,2 @@
 .vscode/
-obj/src/
 !bin/*.dll
