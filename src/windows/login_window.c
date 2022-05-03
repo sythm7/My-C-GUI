@@ -1,6 +1,4 @@
 #include "login_window.h"
-#include <windows.h>
-#include <locale.h>
 
 #include <stdio.h>
 
@@ -9,9 +7,7 @@ Window create_window() {
     Dimension dimension = init_dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
     Color background_color = init_color(33, 37, 43, 255);
-
-    setlocale(LC_ALL, "");
-
+    
     Window window = init_window(DEFAULT_TITLE, background_color);
 
     Label label = init_label("font/arial.ttf", 35);
