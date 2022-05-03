@@ -22,7 +22,7 @@ else
 	CLEAN_COMMAND = rm -rf $(OBJDIR)/* $(EXEC)
 	INCLUDE_PATH =
 	LIB_PATH =
-	LINKS = $(shell sdl2-config --cflags --libs)
+	LINKS = $(shell sdl2-config --cflags --libs) -lSDL2_image -lSDL2_ttf
 	MKDIR = mkdir -p
 	STD_REDIRECTION = 2>/dev/null
 	EXTRAS =
