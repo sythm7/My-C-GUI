@@ -1,33 +1,32 @@
 #include "login_window.h"
+#include <windows.h>
+#include <locale.h>
 
-AppWindow create_app_window();
+#include <stdio.h>
 
-Color background_color;
+Window create_window() {
 
-AppWindow display_login_window() {
-    
-    AppWindow app_window = create_app_window();
+    Dimension dimension = init_dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
-    render_app_window(app_window);
+    Color background_color = init_color(33, 37, 43, 255);
 
-    return app_window;
-}
+    setlocale(LC_ALL, "");
 
+    Window window = init_window(DEFAULT_TITLE, background_color);
 
-AppWindow create_app_window() {
+    Label label = init_label("font/arial.ttf", 35);
 
-    Dimension dimension;
-    dimension.width = DEFAULT_WIDTH;
-    dimension.height = DEFAULT_HEIGHT;
+    set_label_text(label, "Salut comment ça va aujourd'hui t'es tranquille et tout ? Super Nice alors c'est cool de savoir ça");
 
-    Position position;
-    position.x = SDL_WINDOWPOS_CENTERED;
-    position.y = SDL_WINDOWPOS_CENTERED;
+    Panel panel = init_panel();
 
-    background_color.r = 33;
-    background_color.g = 37;
-    background_color.b = 43;
-    background_color.a = 255;
+    set_panel(window, panel);
 
-    return init_app_window("MyApp", &dimension, &position, &background_color);
+    add_label(panel, label);
+
+    set_window_dimension(window, dimension);
+
+    center_window_position(window);
+
+    return window;
 }

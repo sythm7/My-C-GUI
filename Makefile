@@ -1,10 +1,10 @@
 EXEC_NAME = MyApp
 OBJDIR = obj
-SRCDIRS = src src/windows
+SRCDIRS = $(sort $(dir $(wildcard src/*/)))
 EXEC = bin/$(EXEC_NAME)
 CFLAGS = -Wall -pedantic
-SRCS = $(foreach dir,$(SRCDIRS),$(wildcard $(dir)/*.c))
-INCS = $(foreach dir,$(SRCDIRS),$(wildcard $(dir)/*.h))
+SRCS = $(foreach dir,$(SRCDIRS),$(wildcard $(dir)*.c))
+INCS = $(foreach dir,$(SRCDIRS),$(wildcard $(dir)*.h))
 OBJS = $(SRCS:%.c=$(OBJDIR)/%.o)
 DEPS = $(OBJS:.o=.d)
 
@@ -34,11 +34,11 @@ $(EXEC_NAME) : $(OBJS)
 $(OBJDIR)/%.o : %.c
 	$(eval TEMP = $(subst /,$(SEPARATOR),$(dir $@)))
 	@$(MKDIR) $(TEMP) $(STD_REDIRECTION) || echo Repertory $(TEMP) already exists. Skipping.
-	gcc -MD -c $< -o $@ $(INCLUDE_PATH) $(LIB_PATH) $(LINKS)
+	gcc -MD -c $(CFLAGS) $< -o $@ $(INCLUDE_PATH) $(LIB_PATH) $(LINKS)
 
-debug : $(OBJS)
-	$(eval CFLAGS += -g)
-	gcc $(CFLAGS) $(OBJS) -o $(EXEC) $(INCLUDE_PATH) $(LIB_PATH) $(LINKS)
+debug : CFLAGS += -g
+debug : EXTRAS =
+debug : $(EXEC_NAME)
 
 clean :
 	$(CLEAN_COMMAND)

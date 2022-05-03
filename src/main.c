@@ -1,10 +1,14 @@
+#include <stdio.h>
+#include <unistd.h>
 #include "windows/login_window.h"
 
-void exit_app_with_error(AppWindow app_window, const char* errMessage);
+void exit_app_with_error(Window window, const char* errMessage);
 
 int main(int argc, char** argv) {
 
-    AppWindow app_window = display_login_window();
+    Window window = create_window();
+
+    display_window(window);
     
     bool is_launched = true;
 
@@ -13,7 +17,7 @@ int main(int argc, char** argv) {
         SDL_Event event;
 
         if(SDL_WaitEvent(&event) != 1)
-            exit_app_with_error(app_window, "SDL_WaitEvent() error");
+            exit_app_with_error(window, "SDL_WaitEvent() error");
 
         switch(event.type) {
             case SDL_QUIT :
@@ -25,10 +29,9 @@ int main(int argc, char** argv) {
             default :
                 break;
         }
-
     }
 
-    destroy_app_window(app_window);
+    destroy_window(window);
 
     SDL_Quit();
 

@@ -1,8 +1,12 @@
 #ifndef __LOGIN_WINDOW_H__
 #define __LOGIN_WINDOW_H__
 
-#include "app_window.h"
+#include "../components/window.h"
 
-AppWindow display_login_window();
+#define DEFAULT_WIDTH 960
+#define DEFAULT_HEIGHT 560
+#define DEFAULT_TITLE "MyApp"
+
+Window create_window();
 
 #endif
