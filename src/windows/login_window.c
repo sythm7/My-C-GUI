@@ -12,7 +12,7 @@ Window create_window() {
 
     Label label = init_label("font/arial.ttf", 35);
 
-    set_label_text(label, "Salut comment ça va aujourd'hui t'es tranquille et tout ? Super Nice alors c'est cool de savoir ça");
+    set_label_text(label, "Salut à tous, très chelou les accents");
 
     Panel panel = init_panel();
 

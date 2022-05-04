@@ -1,9 +1,9 @@
 EXEC_NAME = MyApp
 OBJDIR = obj
-SRCDIRS = $(sort $(dir $(wildcard src/*/)))
+SRCDIRS = $(sort $(dir $(wildcard src/*/))) 
 EXEC = bin/$(EXEC_NAME)
 CFLAGS = -Wall -pedantic
-SRCS = $(foreach dir,$(SRCDIRS),$(wildcard $(dir)*.c))
+SRCS = src/main.c $(foreach dir,$(SRCDIRS),$(wildcard $(dir)*.c))
 INCS = $(foreach dir,$(SRCDIRS),$(wildcard $(dir)*.h))
 OBJS = $(SRCS:%.c=$(OBJDIR)/%.o)
 DEPS = $(OBJS:.o=.d)
@@ -29,7 +29,7 @@ else
 endif
 
 $(EXEC_NAME) : $(OBJS)
-	gcc $(CFLAGS) $(OBJS) -o $(EXEC) $(INCLUDE_PATH) $(LIB_PATH) $(LINKS) $(EXTRAS)
+	gcc $(CFLAGS) $^ -o $(EXEC) $(INCLUDE_PATH) $(LIB_PATH) $(LINKS) $(EXTRAS)
 
 $(OBJDIR)/%.o : %.c
 	$(eval TEMP = $(subst /,$(SEPARATOR),$(dir $@)))
@@ -42,5 +42,5 @@ debug : $(EXEC_NAME)
 
 clean :
 	$(CLEAN_COMMAND)
-	
+
 -include $(DEPS)
