@@ -11,15 +11,16 @@ struct s_component {
     ComponentType type;
     bool is_rendered;
     bool is_visible;
+    rendering_function rendering_function;
 };
 
-Component init_component(void* content, uint8_t type) {
+Component init_component(void* content, uint8_t type, rendering_function rendering_function) {
     Component component = malloc(sizeof(struct s_component));
     component->content = content;
     component->type = type;
+    component->rendering_function = rendering_function;
     return component;
 }
-
 
 bool is_rendered(const Component component) {
     return component->is_rendered;
@@ -33,16 +34,16 @@ void set_visible(Component component, bool is_visible) {
     component->is_visible = is_visible;
 }
 
+rendering_function get_rendering_function(Component component) {
+    return component->rendering_function;
+}
+
 ComponentType get_component_type(const Component component) {
     return component->type;
 }
 
 void* get_component_content(Component component) {
     return component->content;
-}
-
-void destroy_component(Component component) {
-    free(component);
 }
 
 
@@ -96,4 +97,8 @@ void set_return_code(Element element, uint8_t return_code) {
 
 void destroy_element(Element element) {
     free(element);
+}
+
+void destroy_component(Component component) {
+    free(component);
 }

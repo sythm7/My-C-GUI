@@ -1,4 +1,5 @@
 #include "window.h"
+#include "components_rendering.h"
 
 struct s_window {
     SDL_Window* window;
@@ -9,7 +10,11 @@ struct s_window {
     Panel panel;
 };
 
-void add_component_to_window(Window window, Component component);
+int resizing_event_watcher(void* data, SDL_Event* event);
+
+void add_component_to_window(Window window, Component component, Panel container_panel);
+
+void display_background(Window window);
 
 Window init_window(const char* title, Color background_color) {
 
@@ -34,9 +39,11 @@ Window init_window(const char* title, Color background_color) {
     if(window->renderer == NULL)
         exit_app_with_error(window, "Window -> init_window() : SDL_CreateRenderer() error\n");
 
-    set_color(window, background_color);
+    set_window_color(window, background_color);
 
     window->panel = NULL;
+
+    SDL_AddEventWatch(resizing_event_watcher, window);
 
     return window;
 }
@@ -57,38 +64,9 @@ void set_panel(Window window, Panel panel) {
     window->panel = panel;
 }
 
-void add_component_to_window(Window window, Component component) {
-    
-    ComponentType component_type = get_component_type(component);
-
-    if(component_type == COMPONENT_LABEL) {
-
-        Label label = (Label) get_component_content(component);
-
-        SDL_Surface* surface = NULL;
-
-        surface = get_label_surface(label);
-
-        SDL_Texture* texture = SDL_CreateTextureFromSurface(window->renderer, surface);
-
-        if(texture == NULL)
-            exit_app_with_error(window, "Window -> add_component_to_window() error\n");
-
-        SDL_Rect dimension;
-
-        SDL_QueryTexture(texture, NULL, NULL, &dimension.w, &dimension.h);
-
-        printf("Dimensions x=%d, y=%d\n", dimension.w, dimension.h);
-
-        dimension.x = 0;
-        dimension.y = 0;
-
-        SDL_Rect rect = {0, 0};
-        SDL_RenderCopy(window->renderer, texture, NULL, &dimension);
-    }
-}
-
 void display_window(Window window) {
+
+    display_background(window);
 
     if(window->panel == NULL)
         return;
@@ -97,18 +75,35 @@ void display_window(Window window) {
     uint32_t panel_components_size = get_components_size(window->panel);
 
     for(int i = 0; i < panel_components_size; i++) {
-        add_component_to_window(window, panel_components[i]);
+        Component component = panel_components[i];
+        rendering_function function = get_rendering_function(component);
+        if(function != NULL)
+            function(window, component);
+        else
+            SDL_Log("Warning : NULL rendering function\n");
     }
 
     SDL_RenderPresent(window->renderer);
 }
 
-void set_color(Window window, Color color) {
-    if(SDL_SetRenderDrawColor(window->renderer, color.r, color.g, color.b, color.a) != 0)
-        exit_app_with_error(window, "Window -> fill_window() : SDL_SetRenderDrawColor() error\n");
+void display_background(Window window) {
+    if(SDL_SetRenderDrawColor(window->renderer, window->color.r, window->color.g, window->color.b, window->color.a) != 0)
+        exit_app_with_error(window, "Window -> display_background() : SDL_SetRenderDrawColor() error\n");
 
     if(SDL_RenderClear(window->renderer) != 0)
-        exit_app_with_error(window, "Window -> fill_window() : SDL_RenderClear() error\n");
+        exit_app_with_error(window, "Window -> display_background() : SDL_RenderClear() error\n");
+}
+
+void set_window_color(Window window, Color color) {
+    window->color = color;
+}
+
+uint8_t add_list(Panel panel, List list) {
+    return add_component(panel, init_component(list, COMPONENT_LIST, &render_list));
+}
+
+uint8_t add_label(Panel panel, Label label) {
+    return add_component(panel, init_component(label, COMPONENT_LABEL, &render_label));
 }
 
 SDL_Texture* create_texture(Window window, const Dimension dimension) {
@@ -144,6 +139,19 @@ Dimension get_window_dimension(Window window) {
 
 Position get_window_position(Window window) {
     return window->position;
+}
+
+
+int resizing_event_watcher(void* data, SDL_Event* event) {
+
+    if (event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_RESIZED) {
+        Window window = (Window) data;
+        SDL_Window* sdl_window = SDL_GetWindowFromID(event->window.windowID);
+        if (sdl_window == window->window) {
+            display_window(window);
+        }
+    }
+    return 0;
 }
 
 void destroy_window(Window window) {

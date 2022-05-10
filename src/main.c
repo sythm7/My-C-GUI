@@ -26,6 +26,11 @@ int main(int argc, char** argv) {
             case SDL_TEXTINPUT :
                 printf("%s", event.text.text);
                 break;
+            case SDL_WINDOWEVENT :
+                if(event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+                    display_window(window);
+
+            
             default :
                 break;
         }

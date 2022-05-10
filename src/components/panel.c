@@ -17,13 +17,13 @@ struct s_panel {
     uint32_t components_size;
 };
 
-
-uint8_t add_component(Panel panel, Component component);
-
-
 Panel init_panel() {
 
     Panel panel = malloc(sizeof(struct s_panel));
+
+    if(panel == NULL)
+        return NULL;
+
     panel->layout = NULL;
     panel->components = NULL;
     panel->dimension = init_dimension(0, 0);
@@ -119,15 +119,6 @@ uint8_t add_component(Panel panel, Component component) {
     panel->components[panel->components_size++] = component;
 
     return OPERATION_SUCCESS;
-}
-
-
-uint8_t add_list(Panel panel, List list) {
-    return add_component(panel, init_component(list, COMPONENT_LIST));
-}
-
-uint8_t add_label(Panel panel, Label label) {
-    return add_component(panel, init_component(label, COMPONENT_LABEL));
 }
 
 Component* get_components(const Panel panel) {

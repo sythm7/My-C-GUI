@@ -19,7 +19,11 @@ void display_window(Window window);
 
 void exit_app_with_error(Window window, const char* errMessage);
 
-void set_color(Window window, Color color);
+void set_window_color(Window window, Color color);
+
+uint8_t add_list(Panel panel, List list);
+
+uint8_t add_label(Panel panel, Label label);
 
 SDL_Texture* create_texture(Window window, Dimension dimension);
 

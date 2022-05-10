@@ -4,11 +4,15 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <SDL.h>
+#include <SDL_ttf.h>
+#include <SDL_image.h>
 
 #define OPERATION_ERROR 0
 #define OPERATION_SUCCESS 1
 
 typedef struct s_component* Component;
+
+typedef void (*rendering_function)(void* window, Component component);
 
 typedef enum {
     COMPONENT_NONE,
@@ -59,7 +63,7 @@ void destroy_element(Element element);
 
 /* END ELEMENT DATA STRUCTURE */
 
-Component init_component(void* content, uint8_t type);
+Component init_component(void* content, uint8_t type, void (*render_function)(void* window, Component component));
 
 void destroy_component(Component component);
 
@@ -72,6 +76,8 @@ void set_visible(Component component, bool is_visible);
 ComponentType get_component_type(const Component component);
 
 void* get_component_content(Component component);
+
+rendering_function get_rendering_function(Component component);
 
 Dimension init_dimension(uint32_t width, uint32_t height);
 

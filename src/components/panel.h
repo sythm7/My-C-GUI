@@ -1,8 +1,10 @@
 #ifndef __PANEL_H__
 #define __PANEL_H__
 
-#include "list.h"
+#include "components_utils.h"
 #include "label.h"
+#include "list.h"
+#include "textfield.h"
 
 typedef struct s_panel* Panel;
 
@@ -11,9 +13,11 @@ Panel init_panel();
 
 uint8_t add_panel(Panel panel, Panel child_panel);
 
-uint8_t add_list(Panel panel, List list);
+uint8_t add_component(Panel panel, Component component);
 
-uint8_t add_label(Panel panel, Label label);
+void set_panel_dimension(Panel panel, Dimension dimension);
+
+void set_panel_position(Panel panel, Position position);
 
 void destroy_panel(Panel panel);
 
