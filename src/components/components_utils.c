@@ -35,6 +35,8 @@ void set_visible(Component component, bool is_visible) {
 }
 
 rendering_function get_rendering_function(Component component) {
+    if(component == NULL)
+        printf("COMPONENT NULL\n");
     return component->rendering_function;
 }
 

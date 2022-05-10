@@ -76,6 +76,12 @@ void display_window(Window window) {
 
     for(int i = 0; i < panel_components_size; i++) {
         Component component = panel_components[i];
+
+        if(component == NULL) {
+            printf("NULL\n");
+            exit(1);
+        }
+
         rendering_function function = get_rendering_function(component);
         if(function != NULL)
             function(window, component);
@@ -104,6 +110,10 @@ uint8_t add_list(Panel panel, List list) {
 
 uint8_t add_label(Panel panel, Label label) {
     return add_component(panel, init_component(label, COMPONENT_LABEL, &render_label));
+}
+
+uint8_t add_textfield(Panel panel, Textfield textfield) {
+    return add_component(panel, init_component(textfield, COMPONENT_TEXT_FIELD, &render_textfield));
 }
 
 SDL_Texture* create_texture(Window window, const Dimension dimension) {

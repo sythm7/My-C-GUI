@@ -4,7 +4,37 @@ SDL_Texture* render_ttf(Label label, Window window);
 
 
 void render_textfield(void* data, Component component) {
-    
+
+    Window window = (Window) data;
+
+    Textfield textfield = (Textfield) get_component_content(component);
+
+    Dimension dimension = get_textfield_dimension(textfield);
+
+    Position position = get_textfield_position(textfield);
+
+    SDL_Texture* texture = SDL_CreateTexture(get_renderer(window), SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, dimension.width, dimension.height);
+
+    SDL_SetRenderTarget(get_renderer(window), texture);
+
+    SDL_Rect rect = {position.x, position.y, dimension.width, dimension.height};
+
+    Color background_color = get_textfield_color(textfield);
+
+    SDL_SetRenderDrawColor(get_renderer(window), 0, 0, 0, 255);
+
+    SDL_RenderFillRect(get_renderer(window), &rect);
+
+    SDL_SetRenderDrawColor(get_renderer(window), background_color.r, background_color.g, background_color.b, background_color.a);
+
+    rect.x+= 3;
+    rect.y -= 3;
+    rect.w -= 6;
+    rect.y -= 6;
+
+    SDL_RenderFillRect(get_renderer(window), &rect);
+
+    SDL_SetRenderTarget(get_renderer(window), NULL);
 }
 
 
@@ -36,9 +66,11 @@ void render_label(void* data, Component component) {
     SDL_DestroyTexture(texture);
 }
 
+
 void render_list(void* data, Component component) {
     // TODO
 }
+
 
 SDL_Texture* render_ttf(Label label, Window window) {
 

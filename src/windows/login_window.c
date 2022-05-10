@@ -28,6 +28,8 @@ Window create_window() {
 
     set_label_position(password_label, init_position(420, 340));
 
+    Textfield username_textfield = init_textfield("font/OpticalFiberBold.ttf", 30, init_dimension(100, 35));
+
     Panel panel = init_panel();
 
     if(panel == NULL)
@@ -42,6 +44,13 @@ Window create_window() {
     add_label(panel, username_label);
 
     add_label(panel, password_label);
+
+    uint8_t operation = add_textfield(panel, username_textfield);
+
+    if(operation == OPERATION_ERROR) {
+        printf("Erreur\n");
+        exit(1);
+    }
 
     set_window_dimension(window, dimension);
 

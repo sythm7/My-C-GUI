@@ -25,6 +25,8 @@ uint8_t add_list(Panel panel, List list);
 
 uint8_t add_label(Panel panel, Label label);
 
+uint8_t add_textfield(Panel panel, Textfield textfield);
+
 SDL_Texture* create_texture(Window window, Dimension dimension);
 
 Dimension get_app_dimension(Window window);
