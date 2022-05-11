@@ -3,6 +3,7 @@ It's still in development. The framework is not complete and is not completely w
 
 # How to use the framework
 In order to use the framework, you will need to install the SDL2 library, that provides a solution for rendering graphical application in C.
+<br>
 [SDL2 wiki](https://wiki.libsdl.org/)
 
 # Framework compatibility
