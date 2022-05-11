@@ -1,4 +1,4 @@
-# ![](https://imgur.com/B6W5pr5My-C-GUI) guide
+![image](https://imgur.com/B6W5pr5My-C-GUI) My-C-GUI guide
 
 # ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) WARNING ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+)
 It's still in development. The framework is not complete and is not completely working !
