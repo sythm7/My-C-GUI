@@ -8,6 +8,8 @@
 </span>
 ```
 
+<p style='color:red'>This is some red text.</p>
+
 <h1>Welcome to the My-C-GUI framework documentation</h1>
 
 <h2>Example of project</h2>
