@@ -1,7 +1,13 @@
 # ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) WARNING ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+)
 It's still in development. The framework is not complete and is not completely working !
 
+# How to use the framework
+In order to use the framework, you will need to install the SDL library, that provides a solution for rendering graphical application in C.
+![SDL installation]
 
+# Framework compatibility
+This framework was designed to be compatible with Windows and all Linux distributions.
+However, it hasn't been tested in MacOS.
 
 # Example of project
 
