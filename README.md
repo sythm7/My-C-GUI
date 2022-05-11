@@ -8,6 +8,8 @@
 </span>
 ```
 
+![Red text](https://via.placeholder.com/150/0000FF/808080%20?Text=Digital.com)
+
 `#D01D1D`Salut
 
 <h2>Example of project</h2>
