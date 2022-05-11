@@ -8,7 +8,7 @@
 </span>
 ```
 
-# ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) Warning
+# ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) WARNING ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+)
 It's still in development. The framework is not complete and is not completely working !
 
 
