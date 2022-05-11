@@ -1,19 +1,9 @@
-```html
-<span style="color:red">
-    <h1><!> WARNING <!></h1>
-    <br>
-    <p>
-        
-    </p>
-</span>
-```
-
 # ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) WARNING ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+)
 It's still in development. The framework is not complete and is not completely working !
 
 
-<h2>Example of project</h2>
 
+# Example of project
 
 The code below will produce the following output once compiled :
 
