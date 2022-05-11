@@ -1,6 +1,3 @@
-# SDL-ChattingApp
-Discord-like application written in C with SDL2 for learning purposes.
-
 # Welcome to the My-C-GUI framework documentation
 
 # EXAMPLE OF PROJECT
@@ -14,7 +11,7 @@ The code below will produce the following output once compiled :
 
 
 + login_window. h
-~~~~~~~~~~~~~{.c}
+```h
 #ifndef __LOGIN_WINDOW_H__
 #define __LOGIN_WINDOW_H__
 
@@ -27,11 +24,11 @@ The code below will produce the following output once compiled :
 Window create_window();
 
 #endif
-~~~~~~~~~~~~~
+```
 
-\n
+
 + login_window.c
-~~~~~~~~~~~~~{.c}
+```c
 #include "login_window.h"
 
 #include <stdio.h>
@@ -89,11 +86,11 @@ Window create_window() {
 
     return window;
 }
-~~~~~~~~~~~~~
+```
 
-\n
+
 + main.c
-~~~~~~~~~~~~~{.c}
+```c
 #include <stdio.h>
 #include <unistd.h>
 #include "windows/login_window.h"
@@ -134,4 +131,4 @@ int main(int argc, char** argv) {
 
     return EXIT_SUCCESS;
 }
-~~~~~~~~~~~~~
+```
