@@ -1,8 +1,9 @@
-<span style="color:red"># <!> WARNING <!></span>
+<span style="color:red"># <!> WARNING <!><br>
+<h1>It's still in development. The framework is not complete and is not completely working !</h1></span>
 
-# Welcome to the My-C-GUI framework documentation
+<h1>Welcome to the My-C-GUI framework documentation</h1>
 
-<h1>Example of project</h1>
+<h2>Example of project</h2>
 
 
 The code below will produce the following output once compiled :
