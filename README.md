@@ -8,9 +8,17 @@
 </span>
 ```
 
-![Red text](https://via.placeholder.com/150/0000FF/808080%20?Text=Digital.com)
+# Color Test Document
 
-`#D01D1D`Salut
+
+<style>H1{color:Blue;}</style>
+<style>H2{color:DarkOrange;}</style>
+<style>p{color:Black;}</style>
+
+
+## Second Heading
+
+This is a test to see how the colors work.
 
 <h2>Example of project</h2>
 
