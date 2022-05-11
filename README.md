@@ -2,6 +2,15 @@
 
 # ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) WARNING ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+)
 It's still in development. The framework is not complete and is not completely working !
+
+<br>
+
+Main things to be added :
++ SDL_Event full management
++ List component rendering
++ Textfield component text rendering in real time.
++ Layouts management
++ Other important components as menus, buttons, combo boxes, scrollbars, check boxes, radio buttons, etc...
 <br><br>
 
 # How to use the framework
@@ -20,7 +29,7 @@ However, it hasn't been tested with MacOS.
 The code below will produce the following output once compiled :
 
 
-![alt text](https://i.imgur.com/ZRcTkEH.png)
+![Imgur](https://i.imgur.com/ZRcTkEH.png)
 
 <br>
 
