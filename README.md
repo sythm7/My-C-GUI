@@ -1,5 +1,12 @@
-<span style="color:red"># <!> WARNING <!><br>
-<h1>It's still in development. The framework is not complete and is not completely working !</h1></span>
+```html
+<span style="color:red">
+    <h1><!> WARNING <!></h1>
+    <br>
+    <p>
+        It's still in development. The framework is not complete and is not completely working !
+    </p>
+</span>
+```
 
 <h1>Welcome to the My-C-GUI framework documentation</h1>
 
