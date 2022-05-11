@@ -8,7 +8,7 @@ In order to use the framework, you will need to install the SDL2 library, that p
 
 # Framework compatibility
 This framework was designed to be compatible with Windows and all Linux distributions.
-However, it hasn't been tested in MacOS.
+However, it hasn't been tested with MacOS.
 
 # Example of project
 
