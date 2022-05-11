@@ -1,8 +1,9 @@
-# <!> IT'S STILL IN DEVELOPMENT. THE FRAME FRAMEWORK NOT COMPLETE AND IS NOT COMPLETELY WORKING !
+<span style="color:red"># <!> WARNING <!><br>
+    <h1>It's still in development. The framework is not complete and is not completely working !</h1></span>
 
 # Welcome to the My-C-GUI framework documentation
 
-# EXAMPLE OF PROJECT
+<h1>Example of project</h1>
 
 
 The code below will produce the following output once compiled :
