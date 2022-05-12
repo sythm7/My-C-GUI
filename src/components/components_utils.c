@@ -109,7 +109,7 @@ void destroy_component(Component component) {
 
 
 uint8_t set_error(const char* message) {
-    SDL_SetError(message);
-    SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, SDL_GetError());
+    SDL_SetError("%s", message);
+    SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, "%s", SDL_GetError());
     return OPERATION_ERROR;
 }
