@@ -6,8 +6,7 @@
 #define DEFAULT_WIDTH 960
 #define DEFAULT_HEIGHT 560
 #define DEFAULT_TITLE "MyApp"
-
-#define DEFAULT_FONT "font/OpticalFiberBold.ttf";
+#define DEFAULT_FONT "font/OpticalFiberBold.ttf"
 
 Window create_window();
 

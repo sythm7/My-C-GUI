@@ -2,8 +2,6 @@
 #include <unistd.h>
 #include "windows/login_window.h"
 
-void exit_app_with_error(Window window, const char* errMessage);
-
 int main(int argc, char** argv) {
 
     Window window = create_window();
@@ -16,8 +14,10 @@ int main(int argc, char** argv) {
 
         SDL_Event event;
 
-        if(SDL_WaitEvent(&event) != 1)
-            exit_app_with_error(window, "SDL_WaitEvent() error");
+        if(SDL_WaitEvent(&event) != 1) {
+            perror("SDL_WaitEvent error\n");
+            exit(1);
+        }
 
         switch(event.type) {
             case SDL_QUIT :
@@ -26,10 +26,6 @@ int main(int argc, char** argv) {
             case SDL_TEXTINPUT :
                 printf("%s", event.text.text);
                 break;
-            case SDL_WINDOWEVENT :
-                if(event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
-                    display_window(window);
-
             
             default :
                 break;

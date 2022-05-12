@@ -2,6 +2,11 @@
 
 #include <stdio.h>
 
+Label welcome_label = NULL;
+Label username_label = NULL;
+Label password_label = NULL;
+
+
 Window create_window() {
 
     Dimension dimension = init_dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT);
@@ -10,47 +15,49 @@ Window create_window() {
     
     Window window = init_window(DEFAULT_TITLE, background_color);
 
-    Label welcome_label = init_label("font/OpticalFiberBold.ttf", 50);
+    Panel panel = init_panel();
+
+    // Labels initialisation
+    welcome_label = init_label(DEFAULT_FONT, 50);
+
+    username_label = init_label(DEFAULT_FONT, 30);
+
+    password_label = init_label(DEFAULT_FONT, 30);
+
+    // Textfields initialisation
+    Textfield username_textfield = init_textfield(DEFAULT_FONT, 30, init_dimension(150, 30));
+
+    Textfield password_textfield = init_textfield(DEFAULT_FONT, 30, init_dimension(150, 30));
 
     set_label_text(welcome_label, "Welcome to MyApp !");
 
     set_label_position(welcome_label, init_position(300, 100));
 
-    Label username_label = init_label("font/OpticalFiberBold.ttf", 30);
-
     set_label_text(username_label, "Username :");
 
     set_label_position(username_label, init_position(420, 230));
-
-    Label password_label = init_label("font/OpticalFiberBold.ttf", 30);
 
     set_label_text(password_label, "Password :");
 
     set_label_position(password_label, init_position(420, 340));
 
-    Textfield username_textfield = init_textfield("font/OpticalFiberBold.ttf", 30, init_dimension(100, 35));
+    set_textfield_position(username_textfield, init_position(410, 270));
 
-    Panel panel = init_panel();
-
-    if(panel == NULL)
-        exit_app_with_error(window, "login_window -> create_window() error\n");
+    set_textfield_position(password_textfield, init_position(410, 380));
 
     set_panel_dimension(panel, dimension);
 
     set_panel(window, panel);
 
-    add_label(panel, welcome_label);
+    add_component(panel, (Component) welcome_label);
 
-    add_label(panel, username_label);
+    add_component(panel, (Component) username_label);
 
-    add_label(panel, password_label);
+    add_component(panel, (Component) password_label);
 
-    uint8_t operation = add_textfield(panel, username_textfield);
+    add_component(panel, (Component) username_textfield);
 
-    if(operation == OPERATION_ERROR) {
-        printf("Erreur\n");
-        exit(1);
-    }
+    add_component(panel, (Component) password_textfield);
 
     set_window_dimension(window, dimension);
 
