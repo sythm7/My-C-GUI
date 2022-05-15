@@ -1,6 +1,7 @@
 # ![Imgur](https://imgur.com/qBWAGTZ.png) My-C-GUI guide
 
 # ![#f03c15](https://imgur.com/v2e0Ih8.png) WARNING ![#f03c15](https://imgur.com/v2e0Ih8.png)
+Unfortunately, no release has been published at the moment.
 It's still in development. The framework is not complete and is not completely working !
 
 <br>
