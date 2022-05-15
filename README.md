@@ -28,7 +28,6 @@ However, it hasn't been tested with MacOS.
 
 The code below will produce the following output once compiled :
 
-
 ![Imgur](https://i.imgur.com/ZRcTkEH.png)
 
 <br>
