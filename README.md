@@ -29,7 +29,7 @@ However, it hasn't been tested with MacOS.
 
 The code below will produce the following output once compiled :
 
-![Imgur](https://imgur.com/GscqQP0)
+![Imgur](https://i.imgur.com/GscqQP0.png)
 
 <br>
 
