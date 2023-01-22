@@ -7,11 +7,9 @@ It's still in development. The framework is not complete and is not completely w
 <br>
 
 Main things to be added :
-+ SDL_Event full management
 + List component rendering
-+ Textfield component text rendering in real time.
 + Layouts management
-+ Other important components as menus, buttons, combo boxes, scrollbars, check boxes, radio buttons, etc...
++ Other important components as menus, combo boxes, scrollbars, check boxes, radio buttons, etc...
 <br><br>
 
 # How to use the framework
