@@ -1,6 +1,7 @@
 # [Imgur](https://i.imgur.com/GscqQP0.png) My-C-GUI guide
 
-# ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) WARNING ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+)
+# ![#f03c15](https://imgur.com/v2e0Ih8.png) WARNING ![#f03c15](https://imgur.com/v2e0Ih8.png)
+Unfortunately, no release has been published at the moment.
 It's still in development. The framework is not complete and is not completely working !
 
 <br>
@@ -26,7 +27,6 @@ However, it hasn't been tested with MacOS.
 
 The code below will produce the following output once compiled :
 
-
 ![Imgur](https://i.imgur.com/GscqQP0.png)
 
 <br>
@@ -36,13 +36,16 @@ The code below will produce the following output once compiled :
 #ifndef __LOGIN_WINDOW_H__
 #define __LOGIN_WINDOW_H__
 
-#include "../components/window.h"
+#include "../engine/GWindow.h"
+#include "AppWindow.h"
 
-#define DEFAULT_WIDTH 960
-#define DEFAULT_HEIGHT 560
+#define DEFAULT_LOGIN_WIDTH 400
+#define DEFAULT_LOGIN_HEIGHT 550
 #define DEFAULT_TITLE "MyApp"
+#define DEFAULT_FONT "../font/OpticalFiberBold.ttf"
+#define ARIAL_FONT "../font/Arial.ttf"
 
-Window create_window();
+GWindow create_login_window();
 
 #endif
 ```
@@ -51,47 +54,59 @@ Window create_window();
 
 + login_window.c
 ```c
-#include "login_window.h"
-#include <stdio.h>
+#include "LoginWindow.h"
+
+GTextfield username_textfield = NULL;
+GTextfield password_textfield = NULL;
 
 int button_click_event(void* data, SDL_Event* event) {
 
-    Button button = (Button) data;
+    GButton button = (GButton) data;
 
-    Position cursor_position;
+    GPosition cursor_position;
 
     SDL_GetMouseState(&cursor_position.x, &cursor_position.y);
 
-    if(GComponentLeftClicked(event, (Component) button)) {
-        GWindowClose(GComponentGetWindow((Component) button));
+    if(GComponentLeftClicked(event, button)) {
+        
+        // verify_credentials();
+        // Example : 
+        // char* username = GTextfieldGetText(username_textfield);
+        // char* password = GTextfieldGetText(password_textfield);
+        // if(! valid(username, password)) {return 0;}
+
+        GWindowClose(GComponentGetWindow(button));
+
+        GWindow app_window = create_app_window();
+
+        GWindowDisplay(app_window);
     }
 
     return 0;
 }
 
 
-Window create_login_window() {
+GWindow create_login_window() {
 
-    Dimension dimension = init_dimension(DEFAULT_LOGIN_WIDTH, DEFAULT_LOGIN_HEIGHT);
+    GDimension dimension = GDimensionInit(DEFAULT_LOGIN_WIDTH, DEFAULT_LOGIN_HEIGHT);
 
-    //Color background_color = GColorInit(33, 37, 43, 255);
-    Color background_color = GColorInit(33, 37, 43, 0);
+    GColor background_color = GColorInit(33, 37, 43, 255);
     
-    Window window = GWindowInit(DEFAULT_TITLE, background_color, SDL_WINDOW_OPENGL);
+    GWindow window = GWindowInit(DEFAULT_TITLE, background_color, SDL_WINDOW_OPENGL);
 
-    Panel panel = GPanelInit();
+    GPanel panel = GPanelInit();
 
     // Labels initialisation
-    Label welcome_label = GLabelInit(DEFAULT_FONT, 40);
-    Label username_label = GLabelInit(DEFAULT_FONT, 30);
-    Label password_label = GLabelInit(DEFAULT_FONT, 30);
+    GLabel welcome_label = GLabelInit(DEFAULT_FONT, 40);
+    GLabel username_label = GLabelInit(DEFAULT_FONT, 30);
+    GLabel password_label = GLabelInit(DEFAULT_FONT, 30);
 
     // Textfields initialisation
-    Textfield username_textfield = GTextfieldInit(DEFAULT_FONT, 15, init_dimension(150, 30));
-    Textfield password_textfield = GTextfieldInit(DEFAULT_FONT, 15, init_dimension(150, 30));
+    username_textfield = GTextfieldInit(ARIAL_FONT, 15, GDimensionInit(150, 30));
+    password_textfield = GTextfieldInit(ARIAL_FONT, 15, GDimensionInit(150, 30));
 
-    // Button initialisation
-    Button ok_button = GButtonInit();
+    // GButton initialisation
+    GButton ok_button = GButtonInit();
 
     GLabelSetText(welcome_label, "Welcome to MyApp !");
 
@@ -119,17 +134,17 @@ Window create_login_window() {
 
     GWindowSetPanel(window, panel);
 
-    GPanelAddComponent(panel, (Component) welcome_label);
+    GPanelAddComponent(panel, welcome_label);
 
-    GPanelAddComponent(panel, (Component) username_label);
+    GPanelAddComponent(panel, username_label);
 
-    GPanelAddComponent(panel, (Component) password_label);
+    GPanelAddComponent(panel, password_label);
 
-    GPanelAddComponent(panel, (Component) username_textfield);
+    GPanelAddComponent(panel, username_textfield);
 
-    GPanelAddComponent(panel, (Component) password_textfield);
+    GPanelAddComponent(panel, password_textfield);
 
-    GPanelAddComponent(panel, (Component) ok_button);
+    GPanelAddComponent(panel, ok_button);
 
     GWindowSetDimension(window, dimension);
 
@@ -147,25 +162,25 @@ Window create_login_window() {
 ```c
 #include <stdio.h>
 #include <unistd.h>
-#include "windows/login_window.h"
+#include "windows/LoginWindow.h"
 
-void exit_app_with_error(Window window, const char* errMessage);
 
-int main(int argc, char** argv) {
+int main(int argc, char* argv[]) {
 
-    Window window = create_login_window();
+    init_prog_path();
 
-    if(GWindowDisplay(window) == G_OPERATION_ERROR) {
-        GWindowDestroy(window);
-        return EXIT_FAILURE;
-    }
+    GWindow login_window = create_login_window();
 
-    if(wait_events() == G_OPERATION_ERROR) {
-        GWindowDestroy(window);
+    if(GWindowDisplay(login_window) == G_OPERATION_ERROR) {
+        GWindowDestroy(login_window);
         return EXIT_FAILURE;
     }
     
-    GWindowDestroy(window);
+    // -------------
+    // Lines of code
+    //--------------
+
+    GWindowDestroy(login_window);
 
     return EXIT_SUCCESS;
 }
