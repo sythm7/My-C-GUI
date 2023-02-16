@@ -1,4 +1,4 @@
-# ![Imgur](https://imgur.com/qBWAGTZ.png) My-C-GUI guide
+# [Imgur](https://i.imgur.com/GscqQP0.png) My-C-GUI guide
 
 # ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) WARNING ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+)
 It's still in development. The framework is not complete and is not completely working !
@@ -6,11 +6,9 @@ It's still in development. The framework is not complete and is not completely w
 <br>
 
 Main things to be added :
-+ SDL_Event full management
 + List component rendering
-+ Textfield component text rendering in real time.
 + Layouts management
-+ Other important components as menus, buttons, combo boxes, scrollbars, check boxes, radio buttons, etc...
++ Other important components as menus, combo boxes, scrollbars, check boxes, radio buttons, etc...
 <br><br>
 
 # How to use the framework
@@ -29,7 +27,7 @@ However, it hasn't been tested with MacOS.
 The code below will produce the following output once compiled :
 
 
-![Imgur](https://i.imgur.com/ZRcTkEH.png)
+![Imgur](https://i.imgur.com/GscqQP0.png)
 
 <br>
 
@@ -54,59 +52,90 @@ Window create_window();
 + login_window.c
 ```c
 #include "login_window.h"
-
 #include <stdio.h>
 
-Window create_window() {
+int button_click_event(void* data, SDL_Event* event) {
 
-    Dimension dimension = init_dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    Button button = (Button) data;
 
-    Color background_color = init_color(33, 37, 43, 255);
+    Position cursor_position;
+
+    SDL_GetMouseState(&cursor_position.x, &cursor_position.y);
+
+    if(GComponentLeftClicked(event, (Component) button)) {
+        GWindowClose(GComponentGetWindow((Component) button));
+    }
+
+    return 0;
+}
+
+
+Window create_login_window() {
+
+    Dimension dimension = init_dimension(DEFAULT_LOGIN_WIDTH, DEFAULT_LOGIN_HEIGHT);
+
+    //Color background_color = GColorInit(33, 37, 43, 255);
+    Color background_color = GColorInit(33, 37, 43, 0);
     
-    Window window = init_window(DEFAULT_TITLE, background_color);
+    Window window = GWindowInit(DEFAULT_TITLE, background_color, SDL_WINDOW_OPENGL);
 
-    Label welcome_label = init_label("font/OpticalFiberBold.ttf", 50);
+    Panel panel = GPanelInit();
 
-    set_label_text(welcome_label, "Welcome to MyApp !");
+    // Labels initialisation
+    Label welcome_label = GLabelInit(DEFAULT_FONT, 40);
+    Label username_label = GLabelInit(DEFAULT_FONT, 30);
+    Label password_label = GLabelInit(DEFAULT_FONT, 30);
 
-    set_label_position(welcome_label, init_position(300, 100));
+    // Textfields initialisation
+    Textfield username_textfield = GTextfieldInit(DEFAULT_FONT, 15, init_dimension(150, 30));
+    Textfield password_textfield = GTextfieldInit(DEFAULT_FONT, 15, init_dimension(150, 30));
 
-    Label username_label = init_label("font/OpticalFiberBold.ttf", 30);
+    // Button initialisation
+    Button ok_button = GButtonInit();
 
-    set_label_text(username_label, "Username :");
+    GLabelSetText(welcome_label, "Welcome to MyApp !");
 
-    set_label_position(username_label, init_position(420, 230));
+    GLabelSetPosition(welcome_label, GPositionInit(55, 75));
 
-    Label password_label = init_label("font/OpticalFiberBold.ttf", 30);
+    GLabelSetText(username_label, "Username :");
 
-    set_label_text(password_label, "Password :");
+    GLabelSetPosition(username_label, GPositionInit(135, 190));
 
-    set_label_position(password_label, init_position(420, 340));
+    GLabelSetText(password_label, "Password :");
 
-    Textfield username_textfield = init_textfield("font/OpticalFiberBold.ttf", 30, init_dimension(150, 30));
+    GLabelSetPosition(password_label, GPositionInit(135, 300));
 
-    set_textfield_position(username_textfield, init_position(410, 270));
+    GTextfieldSetPosition(username_textfield, GPositionInit(125, 240));
 
-    Panel panel = init_panel();
+    GTextfieldSetPosition(password_textfield, GPositionInit(125, 340));
 
-    if(panel == NULL)
-        exit_app_with_error(window, "login_window -> create_window() error\n");
+    GButtonSetText(ok_button, DEFAULT_FONT, 30, "Ok");
 
-    set_panel_dimension(panel, dimension);
+    GButtonSetColor(ok_button, GColorInit(47, 53, 61, 255));
+    
+    GButtonSetPosition(ok_button, GPositionInit(175, 430));
 
-    set_panel(window, panel);
+    GPanelSetDimension(panel, dimension);
 
-    add_label(panel, welcome_label);
+    GWindowSetPanel(window, panel);
 
-    add_label(panel, username_label);
+    GPanelAddComponent(panel, (Component) welcome_label);
 
-    add_label(panel, password_label);
+    GPanelAddComponent(panel, (Component) username_label);
 
-    add_textfield(panel, username_textfield);
+    GPanelAddComponent(panel, (Component) password_label);
 
-    set_window_dimension(window, dimension);
+    GPanelAddComponent(panel, (Component) username_textfield);
 
-    center_window_position(window);
+    GPanelAddComponent(panel, (Component) password_textfield);
+
+    GPanelAddComponent(panel, (Component) ok_button);
+
+    GWindowSetDimension(window, dimension);
+
+    GWindowCenterPosition(window);
+
+    GEventAddListener(&button_click_event, ok_button);
 
     return window;
 }
@@ -124,35 +153,19 @@ void exit_app_with_error(Window window, const char* errMessage);
 
 int main(int argc, char** argv) {
 
-    Window window = create_window();  
+    Window window = create_login_window();
 
-    display_window(window);
-    
-    bool is_launched = true;
-
-    while(is_launched) {
-
-        SDL_Event event;
-
-        if(SDL_WaitEvent(&event) != 1)
-            exit_app_with_error(window, "SDL_WaitEvent() error");
-
-        switch(event.type) {
-            case SDL_QUIT :
-                is_launched = false;
-                break;
-            case SDL_TEXTINPUT :
-                printf("%s", event.text.text);
-                break;
-            
-            default :
-                break;
-        }
+    if(GWindowDisplay(window) == G_OPERATION_ERROR) {
+        GWindowDestroy(window);
+        return EXIT_FAILURE;
     }
 
-    destroy_window(window);
-
-    SDL_Quit();
+    if(wait_events() == G_OPERATION_ERROR) {
+        GWindowDestroy(window);
+        return EXIT_FAILURE;
+    }
+    
+    GWindowDestroy(window);
 
     return EXIT_SUCCESS;
 }

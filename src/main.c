@@ -1,40 +1,51 @@
 #include <stdio.h>
 #include <unistd.h>
-#include "windows/login_window.h"
+#include "windows/LoginWindow.h"
+#include "windows/AppWindow.h"
+#include <stdlib.h>
+#include <libgen.h>
 
-int main(int argc, char** argv) {
 
-    Window window = create_window();
+void init_prog_path();
 
-    display_window(window);
-    
-    bool is_launched = true;
 
-    while(is_launched) {
+int main(int argc, char* argv[]) {
 
-        SDL_Event event;
+    init_prog_path();
 
-        if(SDL_WaitEvent(&event) != 1) {
-            perror("SDL_WaitEvent error\n");
-            exit(1);
-        }
+    GWindow login_window = create_login_window();
 
-        switch(event.type) {
-            case SDL_QUIT :
-                is_launched = false;
-                break;
-            case SDL_TEXTINPUT :
-                printf("%s", event.text.text);
-                break;
-            
-            default :
-                break;
-        }
+    if(GWindowDisplay(login_window) == G_OPERATION_ERROR) {
+        GWindowDestroy(login_window);
+        return EXIT_FAILURE;
     }
+    
+    // -------------
+    // Lines of code
+    //--------------
 
-    destroy_window(window);
-
-    SDL_Quit();
+    GWindowDestroy(login_window);
 
     return EXIT_SUCCESS;
+}
+
+
+
+void init_prog_path() {
+
+    #if defined(_WIN32)
+    strcpy(G_Program_Path, dirname(_pgmptr));
+    #elif defined(__linux__)
+    pid_t pid = getpid();
+
+    char path[256];
+    char path2[256];
+    snprintf(path, sizeof(path), "/proc/%d/exe", pid);
+    readlink(path, path2, 256);
+    strcpy(G_Program_Path, path2);
+    
+    printf("%s\n", G_Program_Path);
+    #endif
+
+    chdir(G_Program_Path);
 }

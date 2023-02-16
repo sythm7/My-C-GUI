@@ -3,3 +3,4 @@ obj/src
 bin/*
 !bin/*.dll
 !bin/sdl2-config
+nul.d
