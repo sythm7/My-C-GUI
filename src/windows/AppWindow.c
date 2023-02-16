@@ -39,7 +39,7 @@ void init_main_panel() {
 
     panel = GPanelInit();
 
-    GPanelSetDimension(panel, GDimensionInit(DEFAULT_APP_WIDTH, DEFAULT_APP_HEIGHT));
+    GComponentSetDimension(panel, GDimensionInit(DEFAULT_APP_WIDTH, DEFAULT_APP_HEIGHT));
 
     GWindowSetPanel(window, panel);
 }
@@ -49,7 +49,7 @@ void init_left_panel() {
 
     left_panel = GPanelInit();
 
-    GPanelSetDimension(left_panel, GDimensionInit(175, 720));
+    GComponentSetDimension(left_panel, GDimensionInit(175, 720));
 
     GPanelSetColor(left_panel, GColorInit(255, 0, 0, 100));
 
@@ -61,9 +61,9 @@ void init_right_panel() {
 
     right_panel = GPanelInit();
 
-    GPanelSetDimension(right_panel, GDimensionInit(1105, 720));
+    GComponentSetDimension(right_panel, GDimensionInit(1105, 720));
 
-    GPanelSetPosition(right_panel, GPositionInit(175, 0));
+    GComponentSetPosition(right_panel, GPositionInit(175, 0));
 
     GPanelSetColor(right_panel, GColorInit(0, 0, 255, 100));
 
@@ -81,7 +81,7 @@ void init_left_top_panel() {
 
     GPanelAddComponent(left_top_panel, label);
 
-    GPanelSetDimension(left_top_panel, GDimensionInit(225, 40));
+    GComponentSetDimension(left_top_panel, GDimensionInit(225, 40));
 
     GPanelSetColor(left_top_panel, GColorInit(0, 255, 0, 100));
 

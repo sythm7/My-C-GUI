@@ -42,22 +42,6 @@ GTextfield GTextfieldInit(const char* font_name, uint8_t font_size, GDimension d
 char* GTextfieldGetText(GTextfield textfield);
 
 /**
- * @brief Get the GTextfield dimension
- * 
- * @param textfield 
- * @return GDimension 
- */
-GDimension GTextfieldGetDimension(GTextfield textfield);
-
-/**
- * @brief Get the GTextfield position
- * 
- * @param textfield 
- * @return GPosition 
- */
-GPosition GTextfieldGetPosition(GTextfield textfield);
-
-/**
  * @brief Get the GTextfield color
  * 
  * @param textfield 
@@ -80,53 +64,5 @@ void GTextfieldSetBackgroundColor(GTextfield textfield, GColor background_color)
  * @param font_color 
  */
 void GTextfieldSetFontColor(GTextfield textfield, GColor font_color);
-
-/**
- * @brief Set the GTextfield dimension
- * 
- * @param textfield 
- * @param dimension 
- */
-void GTextfieldSetDimension(GTextfield textfield, GDimension dimension);
-
-/**
- * @brief Set the GTextfield width
- * 
- * @param textfield 
- * @param width 
- */
-void GTextfieldSetWidth(GTextfield textfield, uint32_t width);
-
-/**
- * @brief Set the GTextfield height
- * 
- * @param textfield 
- * @param height 
- */
-void GTextfieldSetHeight(GTextfield textfield, uint32_t height);
-
-/**
- * @brief Set the GTextfield position
- * 
- * @param textfield 
- * @param position 
- */
-void GTextfieldSetPosition(GTextfield textfield, GPosition position);
-
-/**
- * @brief Set the GTextfield position x
- * 
- * @param textfield 
- * @param x 
- */
-void GTextfieldSetPositionX(GTextfield textfield, uint32_t x);
-
-/**
- * @brief Set the GTextfield position y
- * 
- * @param textfield 
- * @param y 
- */
-void GTextfieldSetPositionY(GTextfield textfield, uint32_t y);
 
 #endif

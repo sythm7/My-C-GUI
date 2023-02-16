@@ -110,27 +110,27 @@ GWindow create_login_window() {
 
     GLabelSetText(welcome_label, "Welcome to MyApp !");
 
-    GLabelSetPosition(welcome_label, GPositionInit(55, 75));
+    GComponentSetPosition(welcome_label, GPositionInit(55, 75));
 
     GLabelSetText(username_label, "Username :");
 
-    GLabelSetPosition(username_label, GPositionInit(135, 190));
+    GComponentSetPosition(username_label, GPositionInit(135, 190));
 
     GLabelSetText(password_label, "Password :");
 
-    GLabelSetPosition(password_label, GPositionInit(135, 300));
+    GComponentSetPosition(password_label, GPositionInit(135, 300));
 
-    GTextfieldSetPosition(username_textfield, GPositionInit(125, 240));
+    GComponentSetPosition(username_textfield, GPositionInit(125, 240));
 
-    GTextfieldSetPosition(password_textfield, GPositionInit(125, 340));
+    GComponentSetPosition(password_textfield, GPositionInit(125, 340));
 
     GButtonSetText(ok_button, DEFAULT_FONT, 30, "Ok");
 
     GButtonSetColor(ok_button, GColorInit(47, 53, 61, 255));
     
-    GButtonSetPosition(ok_button, GPositionInit(175, 430));
+    GComponentSetPosition(ok_button, GPositionInit(175, 430));
 
-    GPanelSetDimension(panel, dimension);
+    GComponentSetDimension(panel, dimension);
 
     GWindowSetPanel(window, panel);
 

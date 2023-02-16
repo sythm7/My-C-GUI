@@ -54,31 +54,6 @@ GColor GLabelGetColor(const GLabel label);
 char* GLabelGetText(const GLabel label);
 
 /**
- * @brief Get the label position
- * 
- * @param label 
- * @return GPosition 
- */
-GPosition GLabelGetPosition(const GLabel label);
-
-/**
- * @brief Get the label dimension
- * 
- * @param label 
- * @return GDimension 
- */
-GDimension GLabelGetDimension(const GLabel label);
-
-/**
- * @brief Check if the position of a label is absolute on the screen or relative to a layout
- * 
- * @param label 
- * @return true 
- * @return false 
- */
-bool GLabelPositionAbsolute(const GLabel label);
-
-/**
  * @brief Set the label text
  * 
  * @param label 
@@ -94,21 +69,5 @@ uint8_t GLabelSetText(GLabel label, char* text);
  * @param color 
  */
 void GLabelSetColor(GLabel label, GColor color);
-
-/**
- * @brief Set the label position
- * 
- * @param label 
- * @param position 
- */
-void GLabelSetPosition(GLabel label, GPosition position);
-
-/**
- * @brief Set the label size
- * 
- * @param label 
- * @param font_size 
- */
-void GLabelSetSize(GLabel label, uint8_t font_size);
 
 #endif

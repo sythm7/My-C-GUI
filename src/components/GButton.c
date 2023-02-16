@@ -29,11 +29,8 @@ struct GButton {
 
 void GComponentSetParentPanel(void* component, GPanel panel);
 GLabel GLabelInit(const char* font_name, uint8_t font_size);
-void GLabelSetSize(GLabel label, uint8_t font_size);
 void GLabelSetColor(GLabel label, GColor color);
 uint8_t GLabelSetText(GLabel label, char* text);
-void GLabelSetPosition(GLabel label, GPosition position);
-GDimension GLabelGetDimension(const GLabel label);
 TTF_Font* GLabelGetFont(const GLabel label);
 char* GLabelGetText(const GLabel label);
 void GLabelDestroy(void* component);
@@ -47,6 +44,7 @@ void GLabelSetFont(GLabel label, TTF_Font* font);
 char* GLabelGetFontName(const GLabel label);
 uint8_t GLabelGetFontSize(const GLabel label);
 void GComponentAdaptDimension(void* component);
+
 
 GButton GButtonInit() {
 
@@ -95,27 +93,6 @@ uint8_t GButtonSetText(GButton button, const char* font_name, uint8_t font_size,
     GLabelSetText(button->label, text);
 
     return G_OPERATION_SUCCESS;
-}
-
-
-void GButtonSetSize(GButton button, GDimension dimension) {
-
-    button->dimension = dimension;
-}
-
-
-void GButtonSetPosition(GButton button, GPosition position) {
-    button->position = position;
-}
-
-
-GPosition GButtonGetPosition(GButton button) {
-    return button->position;
-}
-
-
-GDimension GButtonGetDimension(GButton button) {
-    return button->dimension;
 }
 
 
@@ -211,7 +188,7 @@ uint8_t GButtonRender(void* component) {
 
     GComponentSetParentPanel(button->label, button->parent_panel);
 
-    GLabelSetPosition(button->label, GPositionInit(button->position.x + 10, button->position.y + 10));
+    GComponentSetPosition(button->label, GPositionInit(button->position.x + 10, button->position.y + 10));
 
     SDL_Rect button_texture_dimension = {0, 0, dimension.width + 20, dimension.height + 20};
 

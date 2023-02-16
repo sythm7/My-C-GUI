@@ -1,21 +1,8 @@
 ﻿#include "GTextfield.h"
 
-#define MAX_TEXT_SIZE 200
+#define MAX_TEXT_SIZE 256
 #define IS_UTF8_START(c) ((c & 0x80) == 0x00 || (c & 0xE0) == 0xC0 || (c & 0xF0) == 0xE0 || (c & 0xF8) == 0xF0)
 #define IS_UTF8_FOLLOWING(c) ((c & 0xC0) == 0x80)
-
-uint8_t GTextfieldRender(void* component);
-void GTextfieldDestroy(void* component);
-int GTextfieldMouseClickEvent(void* data, SDL_Event* event);
-int GTextfieldKeyboardEvent(void* data, SDL_Event* event);
-bool GTextfieldConcatenateText(char* destination, const char* source);
-void GTextfieldRemoveLastChar(char* destination);
-char* get_str_copy(const char* source);
-uint8_t GWindowDisplay(GWindow window);
-SDL_Renderer* GWindowGetSDL_Renderer(GWindow window);
-GPanel GWindowGetPanel(GWindow window);
-GComponent* GPanelGetComponentList(const GPanel panel);
-uint32_t GPanelGetComponentListSize(const GPanel panel);
 
 struct GTextfield {
     GRenderingFunction rendering_function;
@@ -37,6 +24,21 @@ struct GTextfield {
     GColor background_color;
     GColor font_color;
 };
+
+
+uint8_t GTextfieldRender(void* component);
+void GTextfieldDestroy(void* component);
+int GTextfieldMouseClickEvent(void* data, SDL_Event* event);
+int GTextfieldKeyboardEvent(void* data, SDL_Event* event);
+bool GTextfieldConcatenateText(char* destination, const char* source);
+void GTextfieldRemoveLastChar(char* destination);
+char* get_str_copy(const char* source);
+uint8_t GWindowDisplay(GWindow window);
+SDL_Renderer* GWindowGetSDL_Renderer(GWindow window);
+GPanel GWindowGetPanel(GWindow window);
+GComponent* GPanelGetComponentList(const GPanel panel);
+uint32_t GPanelGetComponentListSize(const GPanel panel);
+
 
 GTextfield GTextfieldInit(const char* font_name, uint8_t font_size, GDimension dimension) {
 
@@ -63,7 +65,7 @@ GTextfield GTextfieldInit(const char* font_name, uint8_t font_size, GDimension d
     textfield->font = TTF_OpenFont(textfield->font_name, textfield->font_size);
 
     if(textfield->font == NULL) {
-        char message[] = "GTextfieldRender() : wrong font name '";
+        char message[] = "GTextfieldInit() : wrong font name '";
         strcat(message, textfield->font_name);
         strcat(message, "'\n");
         GError(message);
@@ -83,16 +85,6 @@ char* GTextfieldGetText(GTextfield textfield) {
 }
 
 
-GDimension GTextfieldGetDimension(GTextfield textfield) {
-    return textfield->dimension;
-}
-
-
-GPosition GTextfieldGetPosition(GTextfield textfield) {
-    return textfield->position;
-}
-
-
 GColor GTextfieldGetBackgroundColor(GTextfield textfield) {
     return textfield->background_color;
 }
@@ -105,39 +97,6 @@ void GTextfieldSetBackgroundColor(GTextfield textfield, GColor background_color)
 
 void GTextfieldSetFontColor(GTextfield textfield, GColor font_color) {
     textfield->font_color = font_color;
-}
-
-
-void GTextfieldSetDimension(GTextfield textfield, GDimension dimension) {
-    textfield->dimension = dimension;
-}
-
-
-void GTextfieldSetWidth(GTextfield textfield, uint32_t width) {
-    textfield->dimension.width = width;
-}
-
-
-void GTextfieldSetHeight(GTextfield textfield, uint32_t height) {
-    textfield->dimension.height = height;
-}
-
-
-void GTextfieldSetPosition(GTextfield textfield, GPosition position) {
-    textfield->is_pos_absolute = true;
-    textfield->position = position;
-}
-
-
-void GTextfieldSetPositionX(GTextfield textfield, uint32_t x) {
-    textfield->is_pos_absolute = true;
-    textfield->position.x = x;
-}
-
-
-void GTextfieldSetPositionY(GTextfield textfield, uint32_t y) {
-    textfield->is_pos_absolute = true;
-    textfield->position.y = y;
 }
 
 

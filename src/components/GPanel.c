@@ -87,16 +87,6 @@ void GPanelSetBorder(GPanel panel, uint8_t size, bool top, bool bottom, bool lef
 }
 
 
-void GPanelSetDimension(GPanel panel, GDimension dimension) {
-    panel->dimension = dimension;
-}
-
-
-void GPanelSetPosition(GPanel panel, GPosition position) {
-    panel->position = position;
-}
-
-
 void GPanelSetParentWindow(GPanel panel, GWindow window) {
     panel->parent_window = window;
 }

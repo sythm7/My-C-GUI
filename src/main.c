@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
     //--------------
 
     GWindowDestroy(login_window);
-
+    
     return EXIT_SUCCESS;
 }
 
@@ -42,8 +42,7 @@ void init_prog_path() {
     char path2[256];
     snprintf(path, sizeof(path), "/proc/%d/exe", pid);
     readlink(path, path2, 256);
-    strcpy(G_Program_Path, path2);
-    
+    strcpy(G_Program_Path, dirname(path2));
     printf("%s\n", G_Program_Path);
     #endif
 

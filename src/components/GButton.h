@@ -15,14 +15,6 @@ void GButtonSetColor(GButton button, GColor color);
 
 uint8_t GButtonSetText(GButton button, const char* font_name, uint8_t font_size, char* text);
 
-void GButtonSetSize(GButton button, GDimension dimension);
-
-void GButtonSetPosition(GButton button, GPosition position);
-
-GPosition GButtonGetPosition(GButton button);
-
-GDimension GButtonGetDimension(GButton button);
-
 void GButtonDestroy(void* component);
 
 #endif

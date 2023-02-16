@@ -9,9 +9,6 @@
 #define DEFAULT_TITLE "MyApp"
 #define DEFAULT_FONT "../font/OpticalFiberBold.ttf"
 #define ARIAL_FONT "../font/Arial.ttf"
-#define CALIBRI_FONT "../font/Calibri.ttf"
-#define CONSOLA_FONT "../font/Consola.ttf"
-#define SEGOE_FONT "../font/SegoeUI.ttf"
 
 GWindow create_login_window();
 

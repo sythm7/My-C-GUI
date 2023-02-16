@@ -1,6 +1,8 @@
 #include "GComponentUtils.h"
 
-char G_Program_Path[256];
+#define MAX_PATH 256
+
+char G_Program_Path[MAX_PATH];
 
 struct GComponent {
     GRenderingFunction rendering_function;

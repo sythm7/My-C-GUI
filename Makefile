@@ -13,7 +13,7 @@ ifeq ($(OS),Windows_NT)
 	CLEAN_COMMAND = del /S /q $(OBJDIR)\$(strip) bin\$(EXEC_NAME).exe
 	INCLUDE_PATH = -I include
 	LIB_PATH = -L lib
-	LINKS = -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lcomdlg32
+	LINKS = -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
 	MKDIR = mkdir
 	STD_REDIRECTION = 2> NUL
 	EXTRAS = -mwindows
@@ -23,7 +23,7 @@ else
 	CLEAN_COMMAND = rm -rf $(OBJDIR)/* $(EXEC)
 	INCLUDE_PATH =
 	LIB_PATH =
-	LINKS = $(shell sdl2-config --cflags --libs) $(shell pkg-config --cflags gtk+-3.0) $(shell pkg-config --libs gtk+-3.0) -lSDL2_image -lSDL2_ttf
+	LINKS = $(shell sdl2-config --cflags --libs) -lSDL2_image -lSDL2_ttf
 	MKDIR = mkdir -p
 	STD_REDIRECTION = 2>/dev/null
 	EXTRAS = 

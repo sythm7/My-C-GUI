@@ -64,22 +64,6 @@ uint8_t GPanelAddChild(GPanel panel, GPanel child_panel);
 uint8_t GPanelAddComponent(GPanel panel, void* component);
 
 /**
- * @brief Set the GPanel GDimension
- * 
- * @param panel 
- * @param dimension 
- */
-void GPanelSetDimension(GPanel panel, GDimension dimension);
-
-/**
- * @brief Set the GPanel GPosition
- * 
- * @param panel 
- * @param position 
- */
-void GPanelSetPosition(GPanel panel, GPosition position);
-
-/**
  * @brief Get the GWindow affected to a GPanel.
  * 
  * @param panel 

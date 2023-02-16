@@ -30,6 +30,7 @@ void GLabelSetFont(GLabel label, TTF_Font* font);
 char* GLabelGetFontName(const GLabel label);
 uint8_t GLabelGetFontSize(const GLabel label);
 
+
 GLabel GLabelInit(const char* font_name, uint8_t font_size) {
 
     GLabel label = malloc(sizeof(struct GLabel));
@@ -92,14 +93,6 @@ uint8_t GLabelSetText(GLabel label, char* text) {
 }
 
 
-void GLabelSetSize(GLabel label, uint8_t font_size) {
-
-    TTF_CloseFont(label->font);
-
-    label->font = TTF_OpenFont(label->font_name, font_size);
-}
-
-
 void GLabelSetColor(GLabel label, GColor color) {
 
     label->color = color;
@@ -113,11 +106,6 @@ void GLabelSetFont(GLabel label, TTF_Font* font) {
 
 TTF_Font* GLabelGetFont(const GLabel label) {
     return label->font;
-}
-
-
-GDimension GLabelGetDimension(const GLabel label) {
-    return label->dimension;
 }
 
 
@@ -141,30 +129,11 @@ uint8_t GLabelGetFontSize(const GLabel label) {
 }
 
 
-bool GLabelPositionAbsolute(const GLabel label) {
-    return label->is_pos_absolute;
-}
-
-
-GPosition GLabelGetPosition(const GLabel label) {
-    return label->position;
-}
-
-
-void GLabelSetPosition(GLabel label, GPosition position) {
-    label->position.x = position.x;
-    label->position.y = position.y;
-    label->is_pos_absolute = true;
-}
-
 uint8_t GLabelRender(void* component) {
 
     GWindow window = GComponentGetWindow(component);
 
     GLabel label = (GLabel) component;
-
-    if(strcmp(label->text, "Ok") == 0)
-        SDL_Log("Bouton label");
 
     if(label->text[0] == '\0')
         return G_OPERATION_SUCCESS;
@@ -189,10 +158,8 @@ uint8_t GLabelRender(void* component) {
     if(SDL_QueryTexture(label->texture, NULL, NULL, &dimension.w, &dimension.h) != 0)
         return GError("GLabelRender() : failed to query label texture\n");
 
-    if(GLabelPositionAbsolute(label)) {
-        dimension.x = GLabelGetPosition(label).x;
-        dimension.y = GLabelGetPosition(label).y;
-    }
+    dimension.x = GComponentGetPosition(label).x;
+    dimension.y = GComponentGetPosition(label).y;
 
     SDL_Rect src_rect = {0, 0, label->texture_dimension.w, label->texture_dimension.h};
 
