@@ -1,4 +1,4 @@
-# ![Imgur](https://imgur.com/B6W5pr5.png) My-C-GUI guide
+# ![Imgur](https://imgur.com/qBWAGTZ.png) My-C-GUI guide
 
 # ![#f03c15](https://imgur.com/v2e0Ih8.png) WARNING ![#f03c15](https://imgur.com/v2e0Ih8.png)
 Unfortunately, no release has been published at the moment.
