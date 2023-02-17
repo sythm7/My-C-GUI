@@ -35,13 +35,6 @@ typedef struct GPanel *GPanel;
 
 
 /**
- * @brief Get the directory where the application binary is located.
- * 
- */
-extern char G_Program_Path[256];
-
-
-/**
  * @brief GComponent data type
  */
 typedef struct GComponent* GComponent;

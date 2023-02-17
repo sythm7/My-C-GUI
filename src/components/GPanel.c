@@ -68,6 +68,7 @@ GPanel GPanelInit() {
     panel->children_panels = NULL;
     panel->color = GPANEL_DEFAULT_COLOR;
     panel->texture = NULL;
+    GPanelSetBorder(panel, 0, false, false, false, false);
 
     return panel;
 }
@@ -254,13 +255,23 @@ uint8_t GPanelRenderBackground(GPanel panel) {
 
 uint8_t GPanelRenderBorder(GPanel panel) {
 
-    // if(panel->border_size > 0) {
+    if(panel->border_size > 0) {
         
-    //     if(panel->top_border)
+        if(panel->top_border) {
 
-    // }
+        }
+        if(panel->bottom_border) {
 
-    GComponentAdaptDimension(panel);
+        }
+        if(panel->left_border) {
+
+        }
+        if(panel->right_border) {
+
+        }
+
+    }
+
 
     return G_OPERATION_SUCCESS;
 }

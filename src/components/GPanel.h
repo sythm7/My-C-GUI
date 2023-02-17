@@ -44,6 +44,18 @@ GPanel GPanelInit();
 void GPanelSetColor(GPanel panel, GColor color);
 
 /**
+ * @brief Set a visible border around a GPanel
+ * 
+ * @param panel 
+ * @param size 
+ * @param top 
+ * @param bottom 
+ * @param left 
+ * @param right 
+ */
+void GPanelSetBorder(GPanel panel, uint8_t size, bool top, bool bottom, bool left, bool right);
+
+/**
  * @brief Add a child GPanel into a GPanel. \n
  * G_OPERATION_ERROR is returned if an error is encountered, the error detail can be obtained with SDL_GetError()
  * 

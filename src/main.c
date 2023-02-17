@@ -5,6 +5,9 @@
 #include <stdlib.h>
 #include <libgen.h>
 
+#define MAX_PATH 256
+
+char G_Program_Path[MAX_PATH];
 
 void init_prog_path();
 
