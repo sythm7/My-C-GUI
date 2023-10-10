@@ -8,6 +8,7 @@
 #define GIANT_LIST_SIZE 100000
 
 struct GList {
+    // Start GComponent
     GRenderingFunction rendering_function;
     GDestroyFunction destroy_function;
     GComponentType component_type;
@@ -19,6 +20,12 @@ struct GList {
     bool is_pos_absolute;
     SDL_Texture* texture;
     SDL_Rect texture_dimension;
+    SDL_Rect src_dimension;
+    GEventFunction* event_list;
+    int event_list_size;
+    int event_list_allocated;
+    // End GComponent
+    
     GComponent* components;
     GComponentType type;
     uint32_t size;
@@ -34,37 +41,46 @@ uint8_t GListDelAlloc(GList list);
 
 GList GListInit(GColor color, uint8_t list_orientation, GComponentType type) {
 
-    GDimension dimension = GDimensionInit(0, 0);
+    // GDimension dimension = GDimensionInit(0, 0);
 
-    GList list = malloc(sizeof(struct GList));
+    // GList list = malloc(sizeof(struct GList));
+
+    // if(list == NULL) {
+    //     GError("GListInit() : failed to allocate memory\n");
+    //     return NULL;
+    // }
+
+    // list->texture = NULL;
+    // list->dimension = dimension;
+    // list->component_type = COMPONENT_LIST;
+    // list->rendering_function = &GListRender;
+    // list->destroy_function = &GListDestroy;
+    // list->is_component_rendered = false;
+    // list->is_component_visible = true;
+    // list->is_pos_absolute = false;
+
+    GComponent component = GComponentInit(&GListRender, &GListDestroy, COMPONENT_LIST);
+
+    if(component == NULL)
+        return NULL;
+
+    GList list = realloc(component, sizeof(struct GList));
 
     if(list == NULL) {
         GError("GListInit() : failed to allocate memory\n");
         return NULL;
     }
 
+    list->size = 0;
+    list->orientation = list_orientation;
+    list->padding = LIST_DEFAULT_PADDING;
     list->allocated_size = 0;
-
     list->components = malloc(list->allocated_size * sizeof(GComponent));
 
     if(list->components == NULL) {
         GError("GListInit() : failed to allocate memory\n");
         return NULL;
     }
-
-    list->component_type = COMPONENT_LIST;
-    list->rendering_function = &GListRender;
-    list->destroy_function = &GListDestroy;
-    list->is_component_rendered = false;
-    list->is_component_visible = true;
-    list->is_pos_absolute = false;
-
-    list->size = 0;
-    list->texture = NULL;
-    list->dimension = dimension;
-
-    list->orientation = list_orientation;
-    list->padding = LIST_DEFAULT_PADDING;
 
     return list;
 }

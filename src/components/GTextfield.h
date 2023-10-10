@@ -2,7 +2,7 @@
 #define __GTEXTFIELD_H__
 
 /**
- * @file textfield.h
+ * @file GTextfield.h
  * @author sythm
  * @brief Contains all the operations to create and manipulate a GTextfield component.
  * @version 0.1

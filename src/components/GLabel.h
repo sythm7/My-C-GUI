@@ -2,7 +2,7 @@
 #define __GLABEL_H__
 
 /**
- * @file label.h
+ * @file GLabel.h
  * @author sythm
  * @brief Contains all the operations to manipulate a GLabel component
  * @version 0.1

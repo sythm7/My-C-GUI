@@ -1,5 +1,7 @@
 #include "GComponentUtils.h"
 
+#define EVENT_LIST_ALLOCATION 5
+
 struct GComponent {
     GRenderingFunction rendering_function;
     GDestroyFunction destroy_function;
@@ -12,11 +14,18 @@ struct GComponent {
     bool is_pos_absolute;
     SDL_Texture* texture;
     SDL_Rect texture_dimension;
+    SDL_Rect src_dimension;
+    GEventFunction* event_list;
+    int event_list_size;
+    int event_list_allocated;
 };
 
 GWindow GPanelGetWindow(const GPanel panel);
+SDL_Window* GWindowGetSDL_Window(GWindow window);
+//int active_window;
 
-GComponent GComponentInit(GRenderingFunction rendering_function) {
+
+GComponent GComponentInit(GRenderingFunction rendering_function, GDestroyFunction destroy_function, GComponentType type) {
 
     GComponent component = malloc(sizeof(struct GComponent));
 
@@ -26,11 +35,43 @@ GComponent GComponentInit(GRenderingFunction rendering_function) {
     }
 
     component->rendering_function = rendering_function;
+    component->destroy_function = destroy_function;
+    component->component_type = type;
+    component->parent_panel = NULL;
+    component->dimension = GDimensionInit(-1, -1);
+    component->position = GPositionInit(0, 0);
     component->is_component_visible = true;
     component->is_component_rendered = false;
     component->is_pos_absolute = false;
+    component->texture = NULL;
+    component->event_list = NULL;
+    component->event_list_size = 0;
+    component->event_list_allocated = 0;
 
     return component;
+}
+
+
+uint8_t GComponentAddListener(GEventFunction event_function, void* component) {
+
+    SDL_AddEventWatch(event_function, component);
+
+    GComponent gcomponent = (GComponent) component;
+
+    if(gcomponent->event_list_size == gcomponent->event_list_allocated) {
+        GEventFunction* tempPtr = realloc(gcomponent->event_list, EVENT_LIST_ALLOCATION * sizeof(GEventFunction));
+
+        if(tempPtr == NULL)
+            return GError("GComponentAddListener() : Memory allocation error");
+
+        gcomponent->event_list = tempPtr;
+        gcomponent->event_list_allocated += EVENT_LIST_ALLOCATION;
+    }
+
+    gcomponent->event_list[gcomponent->event_list_size] = event_function;
+    gcomponent->event_list_size++;
+
+    return G_OPERATION_SUCCESS;
 }
 
 
@@ -227,21 +268,45 @@ void GComponentAdaptDimension(void* component) {
     GComponent parent_panel = (GComponent) gcomponent->parent_panel;
 
     gcomponent->texture_dimension.x = gcomponent->position.x;
-
     gcomponent->texture_dimension.y = gcomponent->position.y;
+    gcomponent->texture_dimension.w = gcomponent->dimension.width;
+    gcomponent->texture_dimension.h = gcomponent->dimension.height;
+    gcomponent->src_dimension.x = 0;
+    gcomponent->src_dimension.y = 0;
 
     if(parent_panel == NULL)
         return;
 
-    if(gcomponent->dimension.width > parent_panel->texture_dimension.w)
-        gcomponent->texture_dimension.w = parent_panel->texture_dimension.w;
-    else
-        gcomponent->texture_dimension.w = gcomponent->dimension.width;
-    
-    if(gcomponent->dimension.height > parent_panel->dimension.height)
-        gcomponent->texture_dimension.h = parent_panel->texture_dimension.h;   
-    else
-         gcomponent->texture_dimension.h = gcomponent->dimension.height;
+    int area_x = gcomponent->dimension.width + gcomponent->position.x;
+
+    int panel_area_x = parent_panel->texture_dimension.w + parent_panel->position.x;
+
+    int area_y = gcomponent->dimension.height + gcomponent->position.y;
+
+    int panel_area_y = parent_panel->texture_dimension.h + parent_panel->position.y;
+
+    if(area_x > panel_area_x)
+        gcomponent->texture_dimension.w -= (area_x - panel_area_x);
+
+    if(area_y > panel_area_y)
+        gcomponent->texture_dimension.h -= (area_y - panel_area_y);
+
+    if(gcomponent->texture_dimension.x < parent_panel->texture_dimension.x) {
+        int difference = parent_panel->texture_dimension.x - gcomponent->texture_dimension.x;
+        gcomponent->texture_dimension.w -= difference;
+        gcomponent->texture_dimension.x += difference;
+        gcomponent->src_dimension.x += difference;
+    }
+
+    if(gcomponent->texture_dimension.y < parent_panel->texture_dimension.y) {
+        int difference = parent_panel->texture_dimension.y - gcomponent->texture_dimension.y;
+        gcomponent->texture_dimension.h -= difference;
+        gcomponent->texture_dimension.y += difference;
+        gcomponent->src_dimension.y += difference;
+    }
+
+    gcomponent->src_dimension.w = gcomponent->texture_dimension.w;
+    gcomponent->src_dimension.h = gcomponent->texture_dimension.h;
 }
 
 
@@ -256,7 +321,16 @@ SDL_Rect GComponentGetTextureDimension(void* component) {
 
 
 void GComponentDestroy(void* component) {
-    GDestroyFunction function = ((GComponent) component)->destroy_function;
+    GComponent gcomponent = (GComponent) component;
+
+    for(int i = 0; i < gcomponent->event_list_size; i++) {
+        SDL_DelEventWatch(gcomponent->event_list[i], gcomponent);
+    }
+
+    free(gcomponent->event_list);
+
+    GDestroyFunction function = gcomponent->destroy_function;
+
     function(component);
 }
 

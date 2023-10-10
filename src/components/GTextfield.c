@@ -5,6 +5,7 @@
 #define IS_UTF8_FOLLOWING(c) ((c & 0xC0) == 0x80)
 
 struct GTextfield {
+    // Start GComponent
     GRenderingFunction rendering_function;
     GDestroyFunction destroy_function;
     GComponentType component_type;
@@ -16,6 +17,12 @@ struct GTextfield {
     bool is_pos_absolute;
     SDL_Texture* texture;
     SDL_Rect texture_dimension;
+    SDL_Rect src_dimension;
+    GEventFunction* event_list;
+    int event_list_size;
+    int event_list_allocated;
+    // End GComponent
+    
     char text[MAX_TEXT_SIZE];
     char* font_name;
     uint32_t font_size;
@@ -42,26 +49,40 @@ uint32_t GPanelGetComponentListSize(const GPanel panel);
 
 GTextfield GTextfieldInit(const char* font_name, uint8_t font_size, GDimension dimension) {
 
-    GTextfield textfield = malloc(sizeof(struct GTextfield));
+    // GTextfield textfield = malloc(sizeof(struct GTextfield));
     
+    // if(textfield == NULL) {
+    //     GError("GTextfieldInit() : failed to allocate memory\n");
+    //     return NULL;
+    // }
+
+    // textfield->rendering_function = &GTextfieldRender;
+    // textfield->destroy_function = &GTextfieldDestroy;
+    // textfield->component_type = COMPONENT_TEXTFIELD;
+    // textfield->position = GPositionInit(0, 0);
+    // textfield->is_pos_absolute = false;
+    // textfield->dimension = dimension;
+
+    GComponent component = GComponentInit(&GTextfieldRender, &GTextfieldDestroy, COMPONENT_TEXTFIELD);
+
+    if(component == NULL)
+        return NULL;
+
+    GTextfield textfield = realloc(component, sizeof(struct GTextfield));
+
     if(textfield == NULL) {
         GError("GTextfieldInit() : failed to allocate memory\n");
         return NULL;
     }
 
-    textfield->rendering_function = &GTextfieldRender;
-    textfield->destroy_function = &GTextfieldDestroy;
-    textfield->component_type = COMPONENT_TEXTFIELD;
+    textfield->dimension = dimension;
     textfield->text[0] = '\0';
     textfield->font = NULL;
     textfield->font_color = GColorInit(0, 0, 0, 255);
     textfield->font_size = font_size;
     textfield->font_name = get_str_copy(font_name);
     textfield->background_color = GColorInit(255, 255, 255, 255);
-    textfield->position = GPositionInit(0, 0);
-    textfield->is_pos_absolute = false;
     textfield->is_focused = false;
-    textfield->dimension = dimension;
     textfield->font = TTF_OpenFont(textfield->font_name, textfield->font_size);
 
     if(textfield->font == NULL) {
@@ -73,8 +94,8 @@ GTextfield GTextfieldInit(const char* font_name, uint8_t font_size, GDimension d
         return NULL;
     }
 
-    SDL_AddEventWatch(&GTextfieldMouseClickEvent, textfield);
-    SDL_AddEventWatch(&GTextfieldKeyboardEvent, textfield);
+    GComponentAddListener(&GTextfieldMouseClickEvent, textfield);
+    GComponentAddListener(&GTextfieldKeyboardEvent, textfield);
 
     return textfield;
 }

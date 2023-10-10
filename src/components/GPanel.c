@@ -8,6 +8,7 @@
 #define GPANEL_DEFAULT_COLOR GColorInit(0, 0, 0, 0)
 
 struct GPanel {
+    // Start GComponent
     GRenderingFunction rendering_function;
     GDestroyFunction destroy_function;
     GComponentType component_type;
@@ -19,6 +20,12 @@ struct GPanel {
     bool is_pos_absolute;
     SDL_Texture* texture;
     SDL_Rect texture_dimension;
+    SDL_Rect src_dimension;
+    GEventFunction* event_list;
+    int event_list_size;
+    int event_list_allocated;
+    // End GComponent
+    
     GWindow parent_window;
     GComponent* components;
     GPanel* children_panels;
@@ -47,19 +54,34 @@ SDL_Rect GComponentGetTextureDimension(void* component);
 
 GPanel GPanelInit() {
 
-    GPanel panel = malloc(sizeof(struct GPanel));
+    // GPanel panel = malloc(sizeof(struct GPanel));
+
+    // if(panel == NULL) {
+    //     GError("GPanelInit() : failed to allocate memory\n");
+    //     return NULL;
+    // }
+
+    // panel->rendering_function = &GPanelRender;
+    // panel->destroy_function = &GPanelDestroy;
+    // panel->dimension = GDimensionInit(0, 0);
+    // panel->position = GPositionInit(0, 0);
+    // panel->parent_panel = NULL;
+    // panel->texture = NULL;
+
+    GComponent component = GComponentInit(&GPanelRender, &GPanelDestroy, COMPONENT_PANEL);
+
+    if(component == NULL)
+        return NULL;
+
+    GPanel panel = realloc(component, sizeof(struct GPanel));
 
     if(panel == NULL) {
         GError("GPanelInit() : failed to allocate memory\n");
         return NULL;
     }
 
-    panel->rendering_function = &GPanelRender;
-    panel->destroy_function = &GPanelDestroy;
+    GPanelSetBorder(panel, 0, false, false, false, false);
     panel->components = NULL;
-    panel->dimension = GDimensionInit(0, 0);
-    panel->position = GPositionInit(0, 0);
-    panel->parent_panel = NULL;
     panel->parent_window = NULL;
     panel->components_allocated = 0;
     panel->components_size = 0;
@@ -67,8 +89,6 @@ GPanel GPanelInit() {
     panel->children_allocated = 0;
     panel->children_panels = NULL;
     panel->color = GPANEL_DEFAULT_COLOR;
-    panel->texture = NULL;
-    GPanelSetBorder(panel, 0, false, false, false, false);
 
     return panel;
 }
@@ -94,6 +114,9 @@ void GPanelSetParentWindow(GPanel panel, GWindow window) {
 
 
 uint8_t GPanelAddChild(GPanel panel, GPanel child_panel) {
+
+    if(panel == NULL)
+        return GError("GPanelAddChild() : GPanel is NULL");
 
     if(panel->children_allocated == 0) {
         panel->children_panels = malloc(MIN_ALLOCATION * sizeof(GPanel));
@@ -271,7 +294,6 @@ uint8_t GPanelRenderBorder(GPanel panel) {
         }
 
     }
-
 
     return G_OPERATION_SUCCESS;
 }

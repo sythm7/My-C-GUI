@@ -3,7 +3,7 @@
 
 
 /**
- * @file components_utils.h
+ * @file GComponentUtils.h
  * @author sythm
  * @brief Contains all the operations to create and manipulate a component. \n
  * The component data type has to be used only if you need to create custom components. Otherwise use existing components (example : GTextfield).
@@ -141,16 +141,15 @@ GColor GColorYUVToRGB(GColorYUV color_yuv);
 GColor GColorSetLuminance(GColor color, float multiplicator);
 
 /**
- * @brief Create a GComponent (Use only to make a custom component, otherwise, use existing components. Example : GTextfield). \n
- * A NULL pointer is returned if an error is encountered, the error detail can be obtained with SDL_GetError()
+ * @brief @brief Create a GComponent (Use only to make a custom component, otherwise, use existing components. Example : GTextfield). \n
+ * A NULL pointer is returned if an error is encountered, the error detail can be obtained with SDL_GetError().
  * 
- * 
- * @param content 
- * @param type 
- * @param render_function 
+ * @param rendering_function 
+ * @param destroy_function 
+ * @param type
  * @return GComponent 
  */
-GComponent GComponentInit(GRenderingFunction rendering_function);
+GComponent GComponentInit(GRenderingFunction rendering_function, GDestroyFunction destroy_function, GComponentType type);
 
 /**
  * @brief Check if a component has already been rendered on the screen. \n
@@ -313,6 +312,16 @@ bool GMouseRightClicked(SDL_Event* event);
  * @return false 
  */
 bool GMouseRightPressed(SDL_Event* event);
+
+/**
+ * @brief Add an event listener to a component or to another structure to execute a GEventFunction when an event is triggered. \n
+ * The data will be passed into GEventFunction arguments. \n
+ * The data is generally a GComponent, but it can be whatever you want.
+ * 
+ * @param event_function 
+ * @param data 
+ */
+uint8_t GComponentAddListener(GEventFunction event_function, void* component);
 
 /**
  * @brief Create a dimension with the given width and height

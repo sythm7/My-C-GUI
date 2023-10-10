@@ -2,7 +2,7 @@
 #define __GPANEL_H__
 
 /**
- * @file panel.h
+ * @file GPanel.h
  * @author sythm
  * @brief Contains all the operations to create and manipulate a GPanel component.
  * @version 0.1

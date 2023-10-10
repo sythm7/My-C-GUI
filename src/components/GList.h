@@ -2,7 +2,7 @@
 #define __GLIST_H__
 
 /**
- * @file list.h
+ * @file GList.h
  * @author sythm
  * @brief Contains all the operations to create and manipulate a GList component
  * @version 0.1

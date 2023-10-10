@@ -3,7 +3,10 @@
 #define FILE_DIALOG_EVENT 1
 #define FILE_CHOSEN_EVENT 2
 #define MAX_WINDOW_TITLE_SIZE 100
+#define MAX_WINDOW_NUMBER 3
 
+GWindow window_list[MAX_WINDOW_NUMBER];
+int window_list_pos = 0;
 
 struct GWindow {
     SDL_Window* window;
@@ -23,10 +26,22 @@ uint8_t render_window(GWindow window);
 void* call_window_error(GWindow window, const char* message);
 void copy_title(char* destination, const char* source);
 void GComponentSetTextureDimension(void* component, SDL_Rect dimension);
+void window_list_add(GWindow window);
+void window_list_del(GWindow window);
+int window_focus_event(void* data, SDL_Event* event);
+int filter_events(void* data, SDL_Event* event);
+GWindow get_gwindow_from_sdl_window(SDL_Window* sdl_window);
 
 int windows_count = 0;
 bool waiting_events = false;
 
+int truc = 0;
+
+int id = 0;
+
+int active_window = 0;
+
+#include <stdio.h>
 
 GWindow GWindowInit(const char* title, GColor background_color, SDL_WindowFlags flags) {
 
@@ -34,7 +49,11 @@ GWindow GWindowInit(const char* title, GColor background_color, SDL_WindowFlags 
 
     GWindowSetBackgroundColor(window, background_color);
 
-    copy_title(window->title, title);
+    truc++;
+    char truc1[8];
+    sprintf(truc1, "App (%d)", truc);
+
+    copy_title(window->title, truc1);
 
     window->flags = flags;    
 
@@ -44,16 +63,26 @@ GWindow GWindowInit(const char* title, GColor background_color, SDL_WindowFlags 
     window->window = NULL;
     window->renderer = NULL;
 
-    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTS) != 0)
+    if(windows_count == 0) {
+        if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTS) != 0)
         return call_window_error(window, "GWindowInit() : failed to init SDL\n");
 
-    if(TTF_Init() != 0)
-        return call_window_error(window, "GWindowInit() : failed to init SDL_TTF\n");
+        if(TTF_Init() != 0)
+            return call_window_error(window, "GWindowInit() : failed to init SDL_TTF\n");
 
+        
+        if(IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF | IMG_INIT_WEBP) == 0)
+            return call_window_error(window, "GWindowInit() : failed to init SDL_Image\n");
+    }
+    
     window->window = SDL_CreateWindow(window->title, window->position.x, window->position.y, window->dimension.width, window->dimension.height, window->flags | SDL_WINDOW_HIDDEN);
 
     if(window->window == NULL)
         return call_window_error(window, "GWindowInit() : failed to create window\n");
+
+    SDL_SetWindowData(window->window, "ID", &id);
+
+    id++;
 
     window->renderer = SDL_CreateRenderer(window->window, -1, SDL_RENDERER_ACCELERATED);
 
@@ -61,8 +90,18 @@ GWindow GWindowInit(const char* title, GColor background_color, SDL_WindowFlags 
         return call_window_error(window, "GWindowInit() : failed to create renderer\n");
 
     SDL_AddEventWatch(window_event, window);
+    SDL_AddEventWatch(window_focus_event, NULL);
 
     windows_count++;
+
+    if(window_list_pos == MAX_WINDOW_NUMBER) {
+        char number[4];
+        char dest[] = "Number of window creation is limited to ";
+        sprintf(number, "%d", MAX_WINDOW_NUMBER);
+        return call_window_error(window, strcat(dest, number));
+    }
+
+    window_list_add(window);
 
     return window;
 }
@@ -128,11 +167,25 @@ bool GWindowFocused(GWindow window) {
 }
 
 
+int window_focus_event(void* data, SDL_Event* event) {
+
+    if(event->type != SDL_WINDOWEVENT)
+        return 0;
+
+    if(event->window.event == SDL_WINDOWEVENT_ENTER || event->window.event == SDL_WINDOWEVENT_FOCUS_GAINED)
+        active_window = *((int*) SDL_GetWindowData(SDL_GetWindowFromID(event->window.windowID), "ID"));
+
+    return 0;
+}
+
+
 uint8_t wait_events() {
 
     waiting_events = true;
 
     bool is_launched = true;
+
+    SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
 
     while(is_launched) {
 
@@ -140,16 +193,18 @@ uint8_t wait_events() {
 
         if(SDL_WaitEvent(&event) != 1)
             return GError(SDL_GetError());
-
+            
         
         switch(event.type) {
             case SDL_QUIT :
                 is_launched = false;
                 break;
             case SDL_WINDOWEVENT :
+
                 if(event.window.event == SDL_WINDOWEVENT_CLOSE) {
-                    SDL_Window* window = SDL_GetWindowFromID(event.window.windowID);
-                    SDL_HideWindow(window);
+                    SDL_Window* sdl_window = SDL_GetWindowFromID(event.window.windowID);
+                    GWindow window = get_gwindow_from_sdl_window(sdl_window);
+                    GWindowDestroy(window);
                     windows_count--;
                     is_launched = windows_count == 0 ? false : true;
                 }
@@ -194,6 +249,7 @@ uint8_t display_background(GWindow window) {
 
 
 void copy_title(char* destination, const char* source) {
+
     int i = 0;
     for(; i < strlen(source) && i < MAX_WINDOW_TITLE_SIZE - 1; i++)
         destination[i] = source[i];
@@ -245,8 +301,30 @@ SDL_Renderer* GWindowGetSDL_Renderer(GWindow window) {
 }
 
 
-void GEventAddListener(GEventFunction event_function, void* data) {
-    SDL_AddEventWatch(event_function, data);
+void window_list_add(GWindow window) {
+    for(int i = 0; i < window_list_pos; i++) {
+        //("Adress : %p, Title : %s", (void*)window_list[i], window_list[i]->title);
+
+        if(window_list[i] == NULL) {
+            window_list[i] = window;
+            SDL_Log("NULL window");
+            return;
+        }
+    }
+
+    window_list[window_list_pos] = window;
+    window_list_pos++;
+}
+
+
+GWindow get_gwindow_from_sdl_window(SDL_Window* sdl_window) {
+
+    for(int i = 0; i < window_list_pos; i++) {
+        if(window_list[i]->window == sdl_window)
+            return window_list[i];
+    }
+
+    return NULL;
 }
 
 
@@ -268,9 +346,28 @@ uint8_t GWindowClose(GWindow window) {
 
 void GWindowDestroy(GWindow window) {
 
+    SDL_DelEventWatch(window_event, window);
     SDL_DestroyRenderer(window->renderer);
     SDL_DestroyWindow(window->window);
-    GComponentDestroy((GComponent) window->panel);
+
+    if(window->panel != NULL)
+        GComponentDestroy((GComponent) window->panel);
+
+    SDL_Log("%s destroyed", window->title);
+
+    for(int i = 0; i < window_list_pos; i++) {
+        if(window_list[i] == window) {
+            if(i == 1)
+                SDL_Log("fenetre trouvee");
+            window_list[i] = NULL;
+        }
+    }
+
     free(window);
-    SDL_Quit();
+
+    if(windows_count == 0) {
+        SDL_Quit();
+        TTF_Quit();
+        IMG_Quit();
+    }
 }

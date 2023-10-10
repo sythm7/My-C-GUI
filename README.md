@@ -150,7 +150,7 @@ GWindow create_login_window() {
 
     GWindowCenterPosition(window);
 
-    GEventAddListener(&button_click_event, ok_button);
+    GComponentAddListener(&button_click_event, ok_button);
 
     return window;
 }

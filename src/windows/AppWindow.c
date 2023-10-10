@@ -67,6 +67,14 @@ void init_right_panel() {
 
     GPanelSetColor(right_panel, GColorInit(0, 0, 255, 100));
 
+    GLabel tf = GLabelInit(DEFAULT_FONT, 40);
+
+    GComponentSetPosition(tf, GPositionInit(10, 100));
+
+    GLabelSetText(tf, "Salut les amis !");
+
+    GPanelAddComponent(right_panel, tf);
+
     GPanelAddChild(panel, right_panel);
 
 }
@@ -75,11 +83,23 @@ void init_left_top_panel() {
 
     left_top_panel = GPanelInit();
 
-    GLabel label = GLabelInit(DEFAULT_FONT, 35);
+    GButton button = GButtonInit();
 
-    GLabelSetText(label, "Ceci est un test ...");
+    GButtonSetColor(button, GColorInit(47, 53, 61, 255));
 
-    GPanelAddComponent(left_top_panel, label);
+    GComponentSetPosition(button, GPositionInit(10,10));
+
+    GButtonSetText(button, DEFAULT_FONT, 40, "Salut les amis !");
+
+    GPanelAddComponent(left_top_panel, button);
+
+    GLabel tf = GLabelInit(DEFAULT_FONT, 40);
+
+    GComponentSetPosition(tf, GPositionInit(25, 10));
+
+    GLabelSetText(tf, "Salut les amis !");
+
+    GPanelAddComponent(left_top_panel, tf);
 
     GComponentSetDimension(left_top_panel, GDimensionInit(225, 40));
 

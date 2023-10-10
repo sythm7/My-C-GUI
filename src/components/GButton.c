@@ -1,6 +1,5 @@
 ﻿#include "GButton.h"
 #include "GLabel.h"
-#include "GImage.h"
 
 #define MAX_WIDTH 99999
 #define DEFAULT_COLOR GColorInit(140, 140, 140, 255)
@@ -9,6 +8,7 @@
 #define PRESSED_BUTTON_MULTIPLICATOR 1.30f
 
 struct GButton {
+    // Start GComponent
     GRenderingFunction rendering_function;
     GDestroyFunction destroy_function;
     GComponentType component_type;
@@ -20,6 +20,12 @@ struct GButton {
     bool is_pos_absolute;
     SDL_Texture* texture;
     SDL_Rect texture_dimension;
+    SDL_Rect src_dimension;
+    GEventFunction* event_list;
+    int event_list_size;
+    int event_list_allocated;
+    // End GComponent
+    
     GLabel label;
     GImage image;
     GColor color;
@@ -36,7 +42,6 @@ char* GLabelGetText(const GLabel label);
 void GLabelDestroy(void* component);
 SDL_Texture* GLabelRenderTTF(GLabel label, GWindow window);
 uint8_t GLabelRender(void* component);
-uint8_t GImageRender(void* component);
 uint8_t GButtonRender(void* component);
 int GButtonEvent(void* data, SDL_Event* event);
 SDL_Renderer* GWindowGetSDL_Renderer(GWindow window);
@@ -44,36 +49,39 @@ void GLabelSetFont(GLabel label, TTF_Font* font);
 char* GLabelGetFontName(const GLabel label);
 uint8_t GLabelGetFontSize(const GLabel label);
 void GComponentAdaptDimension(void* component);
+void GButtonDestroy(void* component);
 
 
 GButton GButtonInit() {
 
-    GButton button = malloc(sizeof(struct GButton));
-    button->rendering_function = &GButtonRender;
-    button->destroy_function = &GButtonDestroy;
-    button->component_type = COMPONENT_BUTTON;
-    button->parent_panel = NULL;
-    button->position = GPositionInit(0, 0);
-    button->dimension = GDimensionInit(-1, -1);
-    button->is_component_visible = true;
-    button->is_component_rendered = false;
-    button->is_pos_absolute = false;
+    GComponent component = GComponentInit(&GButtonRender, &GButtonDestroy, COMPONENT_BUTTON);
+
+    if(component == NULL)
+        return NULL;
+
+    GButton button = realloc(component, sizeof(struct GButton));
+
+    if(button == NULL) {
+        GError("GButtonInit() : failed to allocate memory\n");
+        return NULL;
+    }
+
+    // button->rendering_function = &GButtonRender;
+    // button->destroy_function = &GButtonDestroy;
+    // button->component_type = COMPONENT_BUTTON;
+    // button->parent_panel = NULL;
+    // button->position = GPositionInit(0, 0);
+    // button->dimension = GDimensionInit(-1, -1);
+    // button->is_component_visible = true;
+    // button->is_component_rendered = false;
+    // button->is_pos_absolute = false;
     button->label = NULL;
-    button->image = NULL;
     button->color = DEFAULT_COLOR;
     button->is_hovered = false;
     button->is_pressed = false;
-    SDL_AddEventWatch(&GButtonEvent, button);
+    GComponentAddListener(&GButtonEvent, button);
 
     return button;
-}
-
-
-void GButtonSetImage(GButton button, GImage image) {
-    GRenderingFunction GLabelDestroy = GComponentGetRenderingFunction(button->label);
-    GLabelDestroy(button->label);
-    button->image = image;
-    button->label = NULL;
 }
 
 
@@ -85,7 +93,6 @@ void GButtonSetColor(GButton button, GColor color) {
 uint8_t GButtonSetText(GButton button, const char* font_name, uint8_t font_size, char* text) {
 
     button->label = GLabelInit(font_name, font_size);
-    button->image = NULL;
 
     if(button->label == NULL)
         return GError("GButtonSetText() : GButton label is NULL\n");
@@ -154,32 +161,27 @@ uint8_t GButtonRender(void* component) {
     int width = 0;
     int height = 0;
 
-    if(button->label == NULL) {
-        // Render image
-    }
-    else {
-        // Render label
-        if(GLabelGetFont(button->label) == NULL) {
-            TTF_Font* label_font = TTF_OpenFont(GLabelGetFontName(button->label), GLabelGetFontSize(button->label));
+    // Render label
+    if(GLabelGetFont(button->label) == NULL) {
+        TTF_Font* label_font = TTF_OpenFont(GLabelGetFontName(button->label), GLabelGetFontSize(button->label));
 
-            if(label_font == NULL) {
-                char message[] = "GButtonRender() : wrong font name '";
-                strcat(message, GLabelGetFontName(button->label));
-                strcat(message, "'\n");
-                return GError(message);
-            }
-
-            GLabelSetFont(button->label, label_font);
-
-            TTF_MeasureUTF8(label_font, GLabelGetText(button->label), MAX_WIDTH, &width, &count);
-
-            height = TTF_FontHeight(GLabelGetFont(button->label));
+        if(label_font == NULL) {
+            char message[] = "GButtonRender() : wrong font name '";
+            strcat(message, GLabelGetFontName(button->label));
+            strcat(message, "'\n");
+            return GError(message);
         }
 
-        TTF_MeasureUTF8(GLabelGetFont(button->label), GLabelGetText(button->label), MAX_WIDTH, &width, &count);
+        GLabelSetFont(button->label, label_font);
+
+        TTF_MeasureUTF8(label_font, GLabelGetText(button->label), MAX_WIDTH, &width, &count);
 
         height = TTF_FontHeight(GLabelGetFont(button->label));
     }
+
+    TTF_MeasureUTF8(GLabelGetFont(button->label), GLabelGetText(button->label), MAX_WIDTH, &width, &count);
+
+    height = TTF_FontHeight(GLabelGetFont(button->label));
   
 
     GDimension dimension = GDimensionInit(width, height);

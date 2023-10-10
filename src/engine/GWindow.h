@@ -2,7 +2,7 @@
 #define __GWINDOW_H__
 
 /**
- * @file window.h
+ * @file GWindow.h
  * @author sythm
  * @brief Contains all the operations to create and manipulate a GWindow.
  * The window is used to render all the components contained in a specified panel.
@@ -152,16 +152,6 @@ SDL_Window* GWindowGetSDL_Window(GWindow window);
  * @return SDL_Renderer* 
  */
 SDL_Renderer* GWindowGetSDL_Renderer(GWindow window);
-
-/**
- * @brief Add an event listener to a component or to another structure to execute a GEventFunction when an event is triggered. \n
- * The data will be passed into GEventFunction arguments. \n
- * The data is generally a GComponent, but it can be whatever you want.
- * 
- * @param event_function 
- * @param data 
- */
-void GEventAddListener(GEventFunction event_function, void* data);
 
 /**
  * @brief Close the window.

@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
     // Lines of code
     //--------------
 
-    GWindowDestroy(login_window);
+    // DEINITIALISER LES COMPOSANTS SDL
     
     return EXIT_SUCCESS;
 }

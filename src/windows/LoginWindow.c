@@ -27,7 +27,7 @@ int button_click_event(void* data, SDL_Event* event) {
         //     return 0;
         // }
 
-        GWindowClose(GComponentGetWindow(button));
+        //GWindowClose(GComponentGetWindow(button));
 
         GWindow app_window = create_app_window();
 
@@ -105,7 +105,7 @@ GWindow create_login_window() {
 
     GWindowCenterPosition(window);
 
-    GEventAddListener(&button_click_event, ok_button);
+    GComponentAddListener(&button_click_event, ok_button);
 
     return window;
 }

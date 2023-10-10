@@ -3,6 +3,7 @@
 #define DEFAULT_TEXT_SIZE 1 * sizeof(char)
 
 struct GLabel {
+    // Start GComponent
     GRenderingFunction rendering_function;
     GDestroyFunction destroy_function;
     GComponentType component_type;
@@ -14,6 +15,12 @@ struct GLabel {
     bool is_pos_absolute;
     SDL_Texture* texture;
     SDL_Rect texture_dimension;
+    SDL_Rect src_dimension;
+    GEventFunction* event_list;
+    int event_list_size;
+    int event_list_allocated;
+    // End GComponent
+    
     TTF_Font* font;
     GColor color;
     char* text;
@@ -33,26 +40,38 @@ uint8_t GLabelGetFontSize(const GLabel label);
 
 GLabel GLabelInit(const char* font_name, uint8_t font_size) {
 
-    GLabel label = malloc(sizeof(struct GLabel));
+    // GLabel label = malloc(sizeof(struct GLabel));
+
+    // if(label == NULL) {
+    //     GError("GLabelInit() : failed to allocate memory\n");
+    //     return NULL;
+    // }
+
+    // label->component_type = COMPONENT_LABEL;
+
+    // label->parent_panel = NULL;
+
+    // label->position = GPositionInit(0, 0);
+
+    // label->dimension = GDimensionInit(0, 0);
+
+    // label->rendering_function = &GLabelRender;
+
+    // label->destroy_function = &GLabelDestroy;
+
+    // label->is_pos_absolute = false;
+
+    GComponent component = GComponentInit(&GLabelRender, &GLabelDestroy, COMPONENT_LABEL);
+
+    if(component == NULL)
+        return NULL;
+
+    GLabel label = realloc(component, sizeof(struct GLabel));
 
     if(label == NULL) {
         GError("GLabelInit() : failed to allocate memory\n");
         return NULL;
     }
-
-    label->component_type = COMPONENT_LABEL;
-
-    label->parent_panel = NULL;
-
-    label->position = GPositionInit(0, 0);
-
-    label->dimension = GDimensionInit(0, 0);
-
-    label->rendering_function = &GLabelRender;
-
-    label->destroy_function = &GLabelDestroy;
-
-    label->is_pos_absolute = false;
 
     label->font_size = font_size;
 
@@ -71,8 +90,6 @@ GLabel GLabelInit(const char* font_name, uint8_t font_size) {
     label->text[0] = '\0';
 
     label->color = GColorInit(255, 255, 255, 255);
-
-    label->texture = NULL;
 
     return label;
 }
@@ -161,9 +178,7 @@ uint8_t GLabelRender(void* component) {
     dimension.x = GComponentGetPosition(label).x;
     dimension.y = GComponentGetPosition(label).y;
 
-    SDL_Rect src_rect = {0, 0, label->texture_dimension.w, label->texture_dimension.h};
-
-    if(SDL_RenderCopy(GWindowGetSDL_Renderer(window), label->texture, &src_rect, &label->texture_dimension) != 0)
+    if(SDL_RenderCopy(GWindowGetSDL_Renderer(window), label->texture, &label->src_dimension, &label->texture_dimension) != 0)
         return GError("GLabelRender() : failed to copy the label render on the screen\n");
 
     label->dimension = GDimensionInit(dimension.w, dimension.h);
