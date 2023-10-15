@@ -63,6 +63,10 @@ GTextfield GTextfieldInit(const char* font_name, uint8_t font_size, GDimension d
     // textfield->is_pos_absolute = false;
     // textfield->dimension = dimension;
 
+    char cwd[100];
+    getcwd(cwd, sizeof(cwd));
+    printf("Current working dir: %s\n", cwd);
+
     GComponent component = GComponentInit(&GTextfieldRender, &GTextfieldDestroy, COMPONENT_TEXTFIELD);
 
     if(component == NULL)
@@ -83,16 +87,6 @@ GTextfield GTextfieldInit(const char* font_name, uint8_t font_size, GDimension d
     textfield->font_name = get_str_copy(font_name);
     textfield->background_color = GColorInit(255, 255, 255, 255);
     textfield->is_focused = false;
-    textfield->font = TTF_OpenFont(textfield->font_name, textfield->font_size);
-
-    if(textfield->font == NULL) {
-        char message[] = "GTextfieldInit() : wrong font name '";
-        strcat(message, textfield->font_name);
-        strcat(message, "'\n");
-        GError(message);
-        GTextfieldDestroy((GComponent) textfield);
-        return NULL;
-    }
 
     GComponentAddListener(&GTextfieldMouseClickEvent, textfield);
     GComponentAddListener(&GTextfieldKeyboardEvent, textfield);
@@ -126,6 +120,16 @@ uint8_t GTextfieldRender(void* component) {
     GWindow window = GComponentGetWindow(component);
 
     GTextfield textfield = (GTextfield) component;
+
+    textfield->font = TTF_OpenFont(textfield->font_name, textfield->font_size);
+
+    if(textfield->font == NULL) {
+        char message[] = "GTextfieldInit() : wrong font name '";
+        strcat(message, textfield->font_name);
+        strcat(message, "'\n");
+        GTextfieldDestroy((GComponent) textfield);
+        return GError(message);
+    }
 
     GDimension dimension = textfield->dimension;
 

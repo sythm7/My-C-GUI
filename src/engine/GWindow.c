@@ -1,11 +1,14 @@
 #include "GWindow.h"
+#include "signal.h"
+
+#if defined(_WIN32)
+#include "windows.h"
+#endif
 
 #define FILE_DIALOG_EVENT 1
 #define FILE_CHOSEN_EVENT 2
 #define MAX_WINDOW_TITLE_SIZE 100
-#define MAX_WINDOW_NUMBER 3
 
-GWindow window_list[MAX_WINDOW_NUMBER];
 int window_list_pos = 0;
 
 struct GWindow {
@@ -17,6 +20,12 @@ struct GWindow {
     GPanel panel;
     SDL_WindowFlags flags;
     char title[MAX_WINDOW_TITLE_SIZE];
+    #if defined(_WIN32)
+
+    #else
+    int pipefd[2];
+    pid_t pid;
+    #endif
 };
 
 int window_event(void* data, SDL_Event* event);
@@ -26,34 +35,23 @@ uint8_t render_window(GWindow window);
 void* call_window_error(GWindow window, const char* message);
 void copy_title(char* destination, const char* source);
 void GComponentSetTextureDimension(void* component, SDL_Rect dimension);
-void window_list_add(GWindow window);
-void window_list_del(GWindow window);
-int window_focus_event(void* data, SDL_Event* event);
-int filter_events(void* data, SDL_Event* event);
-GWindow get_gwindow_from_sdl_window(SDL_Window* sdl_window);
+uint8_t InitSDL(GWindow window);
+uint8_t CreateSDLProcess(GWindow window);
+uint8_t wait_events();
 
 int windows_count = 0;
 bool waiting_events = false;
 
-int truc = 0;
-
-int id = 0;
-
-int active_window = 0;
-
-#include <stdio.h>
-
 GWindow GWindowInit(const char* title, GColor background_color, SDL_WindowFlags flags) {
 
     GWindow window = malloc(sizeof(struct GWindow));
+    
+    if(window == NULL)
+        return call_window_error(window, "GWindowInit : failed to allocate memory\n");
 
     GWindowSetBackgroundColor(window, background_color);
 
-    truc++;
-    char truc1[8];
-    sprintf(truc1, "App (%d)", truc);
-
-    copy_title(window->title, truc1);
+    copy_title(window->title, title);
 
     window->flags = flags;    
 
@@ -63,45 +61,10 @@ GWindow GWindowInit(const char* title, GColor background_color, SDL_WindowFlags 
     window->window = NULL;
     window->renderer = NULL;
 
-    if(windows_count == 0) {
-        if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTS) != 0)
-        return call_window_error(window, "GWindowInit() : failed to init SDL\n");
+    if(CreateSDLProcess(window) == G_OPERATION_ERROR)
+        return call_window_error(window, "GWindowInit() : failed to create process\n");
 
-        if(TTF_Init() != 0)
-            return call_window_error(window, "GWindowInit() : failed to init SDL_TTF\n");
-
-        
-        if(IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF | IMG_INIT_WEBP) == 0)
-            return call_window_error(window, "GWindowInit() : failed to init SDL_Image\n");
-    }
-    
-    window->window = SDL_CreateWindow(window->title, window->position.x, window->position.y, window->dimension.width, window->dimension.height, window->flags | SDL_WINDOW_HIDDEN);
-
-    if(window->window == NULL)
-        return call_window_error(window, "GWindowInit() : failed to create window\n");
-
-    SDL_SetWindowData(window->window, "ID", &id);
-
-    id++;
-
-    window->renderer = SDL_CreateRenderer(window->window, -1, SDL_RENDERER_ACCELERATED);
-
-    if(window->renderer == NULL)
-        return call_window_error(window, "GWindowInit() : failed to create renderer\n");
-
-    SDL_AddEventWatch(window_event, window);
-    SDL_AddEventWatch(window_focus_event, NULL);
-
-    windows_count++;
-
-    if(window_list_pos == MAX_WINDOW_NUMBER) {
-        char number[4];
-        char dest[] = "Number of window creation is limited to ";
-        sprintf(number, "%d", MAX_WINDOW_NUMBER);
-        return call_window_error(window, strcat(dest, number));
-    }
-
-    window_list_add(window);
+    close(window->pipefd[0]);    
 
     return window;
 }
@@ -112,6 +75,88 @@ void* call_window_error(GWindow window, const char* message) {
     GError(message);
     GWindowDestroy(window);
     return NULL;
+}
+
+
+uint8_t InitSDL(GWindow window) {
+
+    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTS) != 0)
+                return GError("GWindowInit() : failed to init SDL\n");
+
+    if(TTF_Init() != 0)
+        return GError("GWindowInit() : failed to init SDL_TTF\n");
+
+    
+    if(IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF | IMG_INIT_WEBP) == 0)
+        return GError("GWindowInit() : failed to init SDL_Image\n");
+    
+    window->window = SDL_CreateWindow(window->title, window->position.x, window->position.y, window->dimension.width, window->dimension.height, window->flags | SDL_WINDOW_HIDDEN);
+
+    if(window->window == NULL)
+        return GError("GWindowInit() : failed to create window\n");
+
+    window->renderer = SDL_CreateRenderer(window->window, -1, SDL_RENDERER_ACCELERATED);
+
+    if(window->renderer == NULL)
+        return GError("GWindowInit() : failed to create renderer\n");
+
+    SDL_AddEventWatch(window_event, window);
+
+    return G_OPERATION_SUCCESS;
+}
+
+
+uint8_t CreateSDLProcess(GWindow window) {
+
+    #ifdef _WIN32
+
+    #else
+    if(pipe(window->pipefd) == -1)
+        return G_OPERATION_ERROR;
+    
+    window->pid = fork();
+
+    switch (window->pid) {
+        case -1 :
+            return G_OPERATION_ERROR;
+        case 0 :
+
+            close(window->pipefd[1]);
+
+            if(InitSDL(window) == G_OPERATION_ERROR) {
+                GWindowDestroy(window);
+                return G_OPERATION_ERROR;
+            }
+
+            printf("bloqué\n");
+
+            if(read(window->pipefd[0], NULL, 0) == -1) {
+                GWindowDestroy(window);
+                return GError("Parent process failed to communicate : can't render window.");
+            }
+
+            printf("debloqué\n");
+
+            if(render_window(window) == G_OPERATION_ERROR) {
+                GWindowDestroy(window);
+                return G_OPERATION_ERROR;
+            }
+
+            SDL_ShowWindow(window->window);
+
+            if(wait_events() == G_OPERATION_ERROR) {
+                GWindowDestroy(window);
+                return G_OPERATION_ERROR;
+            }
+            
+            break;
+        default :
+            break;
+    }
+    #endif
+
+
+    return G_OPERATION_SUCCESS;
 }
 
 
@@ -167,18 +212,6 @@ bool GWindowFocused(GWindow window) {
 }
 
 
-int window_focus_event(void* data, SDL_Event* event) {
-
-    if(event->type != SDL_WINDOWEVENT)
-        return 0;
-
-    if(event->window.event == SDL_WINDOWEVENT_ENTER || event->window.event == SDL_WINDOWEVENT_FOCUS_GAINED)
-        active_window = *((int*) SDL_GetWindowData(SDL_GetWindowFromID(event->window.windowID), "ID"));
-
-    return 0;
-}
-
-
 uint8_t wait_events() {
 
     waiting_events = true;
@@ -203,8 +236,7 @@ uint8_t wait_events() {
 
                 if(event.window.event == SDL_WINDOWEVENT_CLOSE) {
                     SDL_Window* sdl_window = SDL_GetWindowFromID(event.window.windowID);
-                    GWindow window = get_gwindow_from_sdl_window(sdl_window);
-                    GWindowDestroy(window);
+                    SDL_HideWindow(sdl_window);
                     windows_count--;
                     is_launched = windows_count == 0 ? false : true;
                 }
@@ -222,13 +254,20 @@ uint8_t wait_events() {
 
 uint8_t GWindowDisplay(GWindow window) {
 
-    if(render_window(window) == G_OPERATION_ERROR)
-        return G_OPERATION_ERROR;
+    // if(render_window(window) == G_OPERATION_ERROR)
+    //     return G_OPERATION_ERROR;
 
-    SDL_ShowWindow(window->window);
+    // SDL_ShowWindow(window->window);
 
-    if(! waiting_events)
-        return wait_events();
+    // if(! waiting_events)
+    //     return wait_events();
+
+    if(write(window->pipefd[1], NULL, 0) == -1) {
+        close(window->pipefd[1]);
+        return GError("GWindowDisplay() : Failed to communicate with the window.\n");
+    }
+
+    close(window->pipefd[1]);
 
     return G_OPERATION_SUCCESS;
 }
@@ -301,33 +340,6 @@ SDL_Renderer* GWindowGetSDL_Renderer(GWindow window) {
 }
 
 
-void window_list_add(GWindow window) {
-    for(int i = 0; i < window_list_pos; i++) {
-        //("Adress : %p, Title : %s", (void*)window_list[i], window_list[i]->title);
-
-        if(window_list[i] == NULL) {
-            window_list[i] = window;
-            SDL_Log("NULL window");
-            return;
-        }
-    }
-
-    window_list[window_list_pos] = window;
-    window_list_pos++;
-}
-
-
-GWindow get_gwindow_from_sdl_window(SDL_Window* sdl_window) {
-
-    for(int i = 0; i < window_list_pos; i++) {
-        if(window_list[i]->window == sdl_window)
-            return window_list[i];
-    }
-
-    return NULL;
-}
-
-
 uint8_t GWindowClose(GWindow window) {
 
     SDL_Event event;
@@ -352,16 +364,6 @@ void GWindowDestroy(GWindow window) {
 
     if(window->panel != NULL)
         GComponentDestroy((GComponent) window->panel);
-
-    SDL_Log("%s destroyed", window->title);
-
-    for(int i = 0; i < window_list_pos; i++) {
-        if(window_list[i] == window) {
-            if(i == 1)
-                SDL_Log("fenetre trouvee");
-            window_list[i] = NULL;
-        }
-    }
 
     free(window);
 

@@ -28,6 +28,64 @@ int main(int argc, char* argv[]) {
     //--------------
 
     // DEINITIALISER LES COMPOSANTS SDL
+
+    // if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTS) != 0)
+    //         return GError("GWindowInit() : failed to init SDL\n");
+
+    // SDL_Window* window = SDL_CreateWindow("APP", 600, 300, 800, 600, SDL_WINDOW_RESIZABLE);
+
+    // if(window == NULL)
+    //     return GError("GWindowInit() : failed to create window\n");
+
+    // SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
+    // if(renderer == NULL)
+    //     return GError("GWindowInit() : failed to create renderer\n");
+
+    // if(SDL_SetRenderDrawColor(renderer, 255, 0, 0, 0) != 0)
+    //     return GError(SDL_GetError());
+
+    // if(SDL_RenderClear(renderer) != 0)
+    //     return GError(SDL_GetError());
+
+    // if(SDL_SetRenderTarget(renderer, NULL) != 0)
+    //     return GError(SDL_GetError());
+
+    // bool is_launched = true;
+
+    // SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
+
+    // while(is_launched) {
+
+    //     SDL_Event event;
+
+    //     if(SDL_WaitEvent(&event) != 1)
+    //         return GError(SDL_GetError());
+            
+        
+    //     switch(event.type) {
+    //         case SDL_QUIT :
+    //             is_launched = false;
+    //             break;
+    //         case SDL_WINDOWEVENT :
+
+    //             if(event.window.event == SDL_WINDOWEVENT_CLOSE) {
+    //                 SDL_Window* sdl_window = SDL_GetWindowFromID(event.window.windowID);
+    //                 SDL_DestroyWindow(sdl_window);
+    //                 is_launched = false;
+    //             }
+    //             break;
+    //         default :
+    //             break;
+    //     }
+    // }
+
+
+    // // pid_t p = fork();
+
+    // // if(p == 0) {
+        
+    // // }
     
     return EXIT_SUCCESS;
 }

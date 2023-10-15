@@ -54,12 +54,13 @@ GWindow create_login_window() {
     GLabel password_label = GLabelInit(DEFAULT_FONT, 30);
 
     // Textfields initialisation
-    username_textfield = GTextfieldInit(ARIAL_FONT, 15, GDimensionInit(150, 30));
-    password_textfield = GTextfieldInit(ARIAL_FONT, 15, GDimensionInit(150, 30));
+    username_textfield = GTextfieldInit(DEFAULT_FONT, 15, GDimensionInit(150, 30));
+
+    password_textfield = GTextfieldInit(DEFAULT_FONT, 15, GDimensionInit(150, 30));
 
     if(username_textfield == NULL || password_textfield == NULL)
         return NULL;
-
+    
     // GButton initialisation
     GButton ok_button = GButtonInit();
 
