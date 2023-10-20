@@ -128,19 +128,18 @@ uint8_t CreateSDLProcess(GWindow window) {
                 return G_OPERATION_ERROR;
             }
 
-            printf("bloqué\n");
-
-            if(read(window->pipefd[0], NULL, 0) == -1) {
+            char buf = '0';
+            if(read(window->pipefd[0], &buf, 1) == -1) {
                 GWindowDestroy(window);
                 return GError("Parent process failed to communicate : can't render window.");
             }
-
-            printf("debloqué\n");
 
             if(render_window(window) == G_OPERATION_ERROR) {
                 GWindowDestroy(window);
                 return G_OPERATION_ERROR;
             }
+
+            printf("rendered\n");
 
             SDL_ShowWindow(window->window);
 
@@ -261,8 +260,8 @@ uint8_t GWindowDisplay(GWindow window) {
 
     // if(! waiting_events)
     //     return wait_events();
-
-    if(write(window->pipefd[1], NULL, 0) == -1) {
+    char buf = '1';
+    if(write(window->pipefd[1], &buf, 1) == -1) {
         close(window->pipefd[1]);
         return GError("GWindowDisplay() : Failed to communicate with the window.\n");
     }

@@ -63,10 +63,6 @@ GTextfield GTextfieldInit(const char* font_name, uint8_t font_size, GDimension d
     // textfield->is_pos_absolute = false;
     // textfield->dimension = dimension;
 
-    char cwd[100];
-    getcwd(cwd, sizeof(cwd));
-    printf("Current working dir: %s\n", cwd);
-
     GComponent component = GComponentInit(&GTextfieldRender, &GTextfieldDestroy, COMPONENT_TEXTFIELD);
 
     if(component == NULL)

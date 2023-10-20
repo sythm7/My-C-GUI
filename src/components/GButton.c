@@ -183,7 +183,6 @@ uint8_t GButtonRender(void* component) {
 
     height = TTF_FontHeight(GLabelGetFont(button->label));
   
-
     GDimension dimension = GDimensionInit(width, height);
 
     GWindow window = GComponentGetWindow(button);
