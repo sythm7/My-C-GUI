@@ -39,8 +39,6 @@ uint8_t InitSDL(GWindow window);
 uint8_t CreateSDLProcess(GWindow window);
 uint8_t wait_events();
 
-int windows_count = 0;
-bool waiting_events = false;
 
 GWindow GWindowInit(const char* title, GColor background_color, SDL_WindowFlags flags) {
 
@@ -213,8 +211,6 @@ bool GWindowFocused(GWindow window) {
 
 uint8_t wait_events() {
 
-    waiting_events = true;
-
     bool is_launched = true;
 
     SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
@@ -236,16 +232,13 @@ uint8_t wait_events() {
                 if(event.window.event == SDL_WINDOWEVENT_CLOSE) {
                     SDL_Window* sdl_window = SDL_GetWindowFromID(event.window.windowID);
                     SDL_HideWindow(sdl_window);
-                    windows_count--;
-                    is_launched = windows_count == 0 ? false : true;
+                    is_launched = false;
                 }
                 break;
             default :
                 break;
         }
     }
-
-    waiting_events = false;
 
     return G_OPERATION_SUCCESS;
 }
@@ -365,10 +358,7 @@ void GWindowDestroy(GWindow window) {
         GComponentDestroy((GComponent) window->panel);
 
     free(window);
-
-    if(windows_count == 0) {
-        SDL_Quit();
-        TTF_Quit();
-        IMG_Quit();
-    }
+    SDL_Quit();
+    TTF_Quit();
+    IMG_Quit();
 }

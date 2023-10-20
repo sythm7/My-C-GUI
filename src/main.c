@@ -21,10 +21,10 @@ int main(int argc, char* argv[]) {
 
     GWindow login_window = create_login_window();
 
-    // if(GWindowDisplay(login_window) == G_OPERATION_ERROR) {
-    //     GWindowDestroy(login_window);
-    //     return EXIT_FAILURE;
-    // }
+    if(GWindowDisplay(login_window) == G_OPERATION_ERROR) {
+        GWindowDestroy(login_window);
+        return EXIT_FAILURE;
+    }
     
     // -------------
     // Lines of code
