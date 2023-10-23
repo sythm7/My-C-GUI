@@ -3,10 +3,12 @@
 
 #if defined(_WIN32)
 #include "windows.h"
+#else
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
 #endif
 
-#define FILE_DIALOG_EVENT 1
-#define FILE_CHOSEN_EVENT 2
 #define MAX_WINDOW_TITLE_SIZE 100
 
 int window_list_pos = 0;
@@ -25,6 +27,7 @@ struct GWindow {
     #else
     int pipefd[2];
     pid_t pid;
+    int shmid;
     #endif
 };
 
@@ -43,11 +46,20 @@ int windows_count = 0;
 bool waiting_events = false;
 
 GWindow GWindowInit(const char* title, GColor background_color, SDL_WindowFlags flags) {
-
-    GWindow window = malloc(sizeof(struct GWindow));
     
-    if(window == NULL)
-        return call_window_error(window, "GWindowInit : failed to allocate memory\n");
+    int shmid;
+
+    if ((shmid = shmget(IPC_PRIVATE, sizeof(struct GWindow), IPC_CREAT | 0666)) == -1) {
+        GError("Failed to get a memory segment\n");
+        return NULL;
+    }
+
+    GWindow window = (GWindow)shmat(shmid, NULL, 0);
+
+    if(window == (GWindow) -1) {
+        GError("Failed to initialize the window on the shared memory\n");
+        return NULL;
+    }
 
     GWindowSetBackgroundColor(window, background_color);
 
@@ -134,6 +146,8 @@ uint8_t CreateSDLProcess(GWindow window) {
                 return GError("Parent process failed to communicate : can't render window.");
             }
 
+            printf("Dim : %d, %d\n", window->dimension.width, window->dimension.height);
+            
             if(render_window(window) == G_OPERATION_ERROR) {
                 GWindowDestroy(window);
                 return G_OPERATION_ERROR;

@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include "windows/LoginWindow.h"
 #include "windows/AppWindow.h"
+#include "windows/TestWindow.h"
 #include <stdlib.h>
 #include <libgen.h>
 
@@ -19,12 +20,12 @@ int main(int argc, char* argv[]) {
 
     init_prog_path();
 
-    GWindow login_window = create_login_window();
+    GWindow test_window = create_test_window();
 
-    // if(GWindowDisplay(login_window) == G_OPERATION_ERROR) {
-    //     GWindowDestroy(login_window);
-    //     return EXIT_FAILURE;
-    // }
+    if(GWindowDisplay(test_window) == G_OPERATION_ERROR) {
+        GWindowDestroy(test_window);
+        return EXIT_FAILURE;
+    }
     
     // -------------
     // Lines of code
