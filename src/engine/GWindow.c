@@ -3,11 +3,9 @@
 
 #if defined(_WIN32)
 #include "windows.h"
-#else
-#include <sys/types.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
 #endif
+
+#include "pthread.h"
 
 #define MAX_WINDOW_TITLE_SIZE 100
 
@@ -22,13 +20,9 @@ struct GWindow {
     GPanel panel;
     SDL_WindowFlags flags;
     char title[MAX_WINDOW_TITLE_SIZE];
-    #if defined(_WIN32)
 
-    #else
-    int pipefd[2];
-    pid_t pid;
-    int shmid;
-    #endif
+    pthread_mutex_t mutex;
+    pthread_t thread;
 };
 
 int window_event(void* data, SDL_Event* event);
@@ -39,23 +33,16 @@ void* call_window_error(GWindow window, const char* message);
 void copy_title(char* destination, const char* source);
 void GComponentSetTextureDimension(void* component, SDL_Rect dimension);
 uint8_t InitSDL(GWindow window);
-uint8_t CreateSDLProcess(GWindow window);
+void* CreateSDLThread(void* arg);
 uint8_t wait_events();
 
 
 GWindow GWindowInit(const char* title, GColor background_color, SDL_WindowFlags flags) {
-    
-    int shmid;
 
-    if ((shmid = shmget(IPC_PRIVATE, sizeof(struct GWindow), IPC_CREAT | 0666)) == -1) {
-        GError("Failed to get a memory segment\n");
-        return NULL;
-    }
+    GWindow window = malloc(sizeof(struct GWindow));
 
-    GWindow window = (GWindow)shmat(shmid, NULL, 0);
-
-    if(window == (GWindow) -1) {
-        GError("Failed to initialize the window on the shared memory\n");
+    if(window == NULL) {
+        GError("GWindowInit() : Failed to allocate memory\n");
         return NULL;
     }
 
@@ -71,10 +58,8 @@ GWindow GWindowInit(const char* title, GColor background_color, SDL_WindowFlags 
     window->window = NULL;
     window->renderer = NULL;
 
-    if(CreateSDLProcess(window) == G_OPERATION_ERROR)
-        return call_window_error(window, "GWindowInit() : failed to create process\n");
-
-    close(window->pipefd[0]);    
+    if(pthread_create(&window->thread, NULL, CreateSDLThread, window) != 0) 
+        return call_window_error(window, "GWindowInit() : failed to initialize window thread\n");
 
     return window;
 }
@@ -116,56 +101,30 @@ uint8_t InitSDL(GWindow window) {
 }
 
 
-uint8_t CreateSDLProcess(GWindow window) {
+void* CreateSDLThread(void* arg) {
 
-    #ifdef _WIN32
+    GWindow window = (GWindow) arg;
 
-    #else
-    if(pipe(window->pipefd) == -1)
+    if(InitSDL(window) == G_OPERATION_ERROR) {
+        GWindowDestroy(window);
         return G_OPERATION_ERROR;
-    
-    window->pid = fork();
-
-    switch (window->pid) {
-        case -1 :
-            return G_OPERATION_ERROR;
-        case 0 :
-
-            close(window->pipefd[1]);
-
-            if(InitSDL(window) == G_OPERATION_ERROR) {
-                GWindowDestroy(window);
-                return G_OPERATION_ERROR;
-            }
-
-            char buf = '0';
-            if(read(window->pipefd[0], &buf, 1) == -1) {
-                GWindowDestroy(window);
-                return GError("Parent process failed to communicate : can't render window.");
-            }
-
-            printf("Dim : %d, %d\n", window->dimension.width, window->dimension.height);
-            
-            if(render_window(window) == G_OPERATION_ERROR) {
-                GWindowDestroy(window);
-                return G_OPERATION_ERROR;
-            }
-
-            printf("rendered\n");
-
-            SDL_ShowWindow(window->window);
-
-            if(wait_events() == G_OPERATION_ERROR) {
-                GWindowDestroy(window);
-                return G_OPERATION_ERROR;
-            }
-            
-            break;
-        default :
-            break;
     }
-    #endif
+    
+    if(render_window(window) == G_OPERATION_ERROR) {
+        GWindowDestroy(window);
+        return G_OPERATION_ERROR;
+    }
 
+    printf("rendered\n");
+
+    SDL_ShowWindow(window->window);
+
+    pthread_mutex_lock(&window->mutex);
+
+    if(wait_events() == G_OPERATION_ERROR) {
+        GWindowDestroy(window);
+        return G_OPERATION_ERROR;
+    }
 
     return G_OPERATION_SUCCESS;
 }
@@ -260,20 +219,7 @@ uint8_t wait_events() {
 
 uint8_t GWindowDisplay(GWindow window) {
 
-    // if(render_window(window) == G_OPERATION_ERROR)
-    //     return G_OPERATION_ERROR;
-
-    // SDL_ShowWindow(window->window);
-
-    // if(! waiting_events)
-    //     return wait_events();
-    char buf = '1';
-    if(write(window->pipefd[1], &buf, 1) == -1) {
-        close(window->pipefd[1]);
-        return GError("GWindowDisplay() : Failed to communicate with the window.\n");
-    }
-
-    close(window->pipefd[1]);
+    pthread_mutex_unlock(&window->mutex);
 
     return G_OPERATION_SUCCESS;
 }
