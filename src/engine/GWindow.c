@@ -6,6 +6,7 @@
 #endif
 
 #include "pthread.h"
+#include "semaphore.h"
 
 #define MAX_WINDOW_TITLE_SIZE 100
 
@@ -21,7 +22,7 @@ struct GWindow {
     SDL_WindowFlags flags;
     char title[MAX_WINDOW_TITLE_SIZE];
 
-    pthread_mutex_t mutex;
+    sem_t semaphore;
     pthread_t thread;
 };
 
@@ -58,6 +59,8 @@ GWindow GWindowInit(const char* title, GColor background_color, SDL_WindowFlags 
     window->window = NULL;
     window->renderer = NULL;
 
+    if(sem_init(&window->semaphore, 0, 0) != 0)
+        return call_window_error(window, "GWindowInit() : failed to initialize semaphore\n");
     if(pthread_create(&window->thread, NULL, CreateSDLThread, window) != 0) 
         return call_window_error(window, "GWindowInit() : failed to initialize window thread\n");
 
@@ -70,7 +73,7 @@ void* call_window_error(GWindow window, const char* message) {
     GError(message);
     GWindowDestroy(window);
     return NULL;
-}
+} 
 
 
 uint8_t InitSDL(GWindow window) {
@@ -107,26 +110,33 @@ void* CreateSDLThread(void* arg) {
 
     if(InitSDL(window) == G_OPERATION_ERROR) {
         GWindowDestroy(window);
-        return G_OPERATION_ERROR;
+        return NULL;
     }
     
+    if(sem_wait(&window->semaphore) != 0) {
+        GWindowDestroy(window);
+        return NULL;
+    }
+
     if(render_window(window) == G_OPERATION_ERROR) {
         GWindowDestroy(window);
-        return G_OPERATION_ERROR;
+        return NULL;
     }
 
     printf("rendered\n");
 
     SDL_ShowWindow(window->window);
 
-    pthread_mutex_lock(&window->mutex);
-
-    if(wait_events() == G_OPERATION_ERROR) {
+    if(wait_events() == G_OPERATION_ERROR)
         GWindowDestroy(window);
-        return G_OPERATION_ERROR;
-    }
 
-    return G_OPERATION_SUCCESS;
+    return NULL;
+}
+
+
+void GWindowWait(GWindow window) {
+
+    pthread_join(window->thread, NULL);
 }
 
 
@@ -158,6 +168,7 @@ uint8_t render_window(GWindow window) {
 
 void GWindowSetDimension(GWindow window, GDimension dimension) {
     SDL_SetWindowSize(window->window, dimension.width, dimension.height);
+    window->dimension = dimension;
 }
 
 
@@ -219,7 +230,10 @@ uint8_t wait_events() {
 
 uint8_t GWindowDisplay(GWindow window) {
 
-    pthread_mutex_unlock(&window->mutex);
+    if(sem_post(&window->semaphore) != 0) {
+        GWindowDestroy(window);
+        return G_OPERATION_ERROR;
+    }
 
     return G_OPERATION_SUCCESS;
 }

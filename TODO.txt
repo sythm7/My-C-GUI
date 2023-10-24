@@ -1,8 +1,7 @@
-- Créer un thread par fenetre. (Les events sont gérés par un seul thread donc une seul fenêtre gère les events de plusieurs fenêtres)
-(+ Résoudre bug crash quand on ferme et qu'on reouvre plein de fenetres d'afilée)
-UPDATE: Trouver un autre moyen de gérer les évènements sur plusieurs fenêtres (impossible de créer un thread par fenêtre)
+- Créer un thread par fenetre. (Les events sont gérés par un seul thread donc une seul fenêtre gère les events de plusieurs fenêtres) -> En cours (dans la branche testThreads)
+    Trouver un moyen 
 
-- Ajouter un SDL_SetEventFilter à chaque fois qu'on ajoute un listener à un composant.
+(+ Résoudre bug crash quand on ferme et qu'on reouvre plein de fenetres d'afilée) -> Si les threads fonctionnent plus besoin
 
 - Détruire tous les évènements ayant été ajoutés aux composants lors de leur destruction (créer une liste de tous les évènements ajoutés pour tous les détruire)
 

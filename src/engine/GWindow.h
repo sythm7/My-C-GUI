@@ -59,6 +59,8 @@ typedef struct GWindow* GWindow;
  */
 GWindow GWindowInit(const char* title, GColor background_color, SDL_WindowFlags flags);
 
+void GWindowWait(GWindow window);
+
 /**
  * @brief Set the window dimension.
  * 

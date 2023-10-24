@@ -22,10 +22,14 @@ int main(int argc, char* argv[]) {
 
     GWindow test_window = create_test_window();
 
+    sleep(2);
+
     if(GWindowDisplay(test_window) == G_OPERATION_ERROR) {
         GWindowDestroy(test_window);
         return EXIT_FAILURE;
     }
+
+    GWindowWait(test_window);
     
     // -------------
     // Lines of code
