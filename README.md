@@ -23,9 +23,9 @@ On Linux / MacOS :
 On Windows :
     As the SDL2 DLLs are already included in the project, you can either plug-and-play or decide tu manually update the SDL files to the newest version (It should be okay because newer versions use the same semantics, they just add new fonctionalities)
 
-# Framework compatibility
-This framework was designed to be compatible with Windows and all Linux distributions.
-However, it hasn't been tested with MacOS.
+# Library compatibility
+This library was designed to be compatible with Windows and all Linux distributions.
+However, it hasn't been tested with MacOS but it should be compatible.
 <br><br>
 
 # Example of project
