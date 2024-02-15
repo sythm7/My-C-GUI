@@ -2,7 +2,7 @@
 
 # ![#f03c15](https://imgur.com/v2e0Ih8.png) WARNING ![#f03c15](https://imgur.com/v2e0Ih8.png)
 Unfortunately, no release has been published at the moment.
-It's still in development. The framework is not complete and is not completely working !
+It's still in development. The library is not complete and is not completely working !
 
 <br>
 
@@ -12,11 +12,16 @@ Main things to be added :
 + Other important components as menus, combo boxes, scrollbars, check boxes, radio buttons, etc...
 <br><br>
 
-# How to use the framework
-In order to use the framework, you will need to install the SDL2 library, that provides a solution for rendering graphical applications in C.
-<br>
-[SDL2 wiki](https://wiki.libsdl.org/)
-<br><br>
+# How to use the library
+
+On Linux / MacOS :
+    In order to use the library, you will need to install the SDL2 library, that provides a solution for rendering graphical applications in C.
+    <br>
+    [SDL2 wiki](https://wiki.libsdl.org/)
+    <br><br>
+
+On Windows :
+    As the SDL2 DLLs are already included in the project, you can either plug-and-play or decide tu manually update the SDL files to the newest version (It should be okay because newer versions use the same semantics, they just add new fonctionalities)
 
 # Framework compatibility
 This framework was designed to be compatible with Windows and all Linux distributions.
