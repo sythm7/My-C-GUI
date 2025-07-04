@@ -21,7 +21,7 @@ On Linux / MacOS :
     <br><br>
 
 On Windows :
-    As the SDL2 DLLs are already included in the project, you can either plug-and-play or decide tu manually update the SDL files to the newest version (It should be okay because newer versions use the same semantics, they just add new fonctionalities)
+    As the SDL2 DLLs are already included in the project, you can either plug-and-play or decide to manually update the SDL files to the newest version (It should be okay because newer versions use the same semantics, they just add new fonctionalities)
 
 # Library compatibility
 This library was designed to be compatible with Windows and all Linux distributions.
